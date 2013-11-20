@@ -4,7 +4,7 @@
 
   <groupId>org.uranus</groupId>
   <artifactId>uranus</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>alpha-1.0</version>
   <packaging>jar</packaging>
 
   <name>uranus</name>

@@ -1,0 +1,59 @@
+package org.uranus.buffer;
+
+public class RingSlideWindowBuffer implements SlideWindowBuffer
+{
+	private static final int MAX = 512 * 1024;
+	
+	private int size = 0;
+	private int cursor = 0;
+	private char[] buffer = new char[MAX+1]; 
+	
+	public RingSlideWindowBuffer() {
+		
+	}
+	
+	@Override
+	public void append(String buf) {
+		append(buf,'\n');
+	}
+
+	@Override
+	public void append(String buf, char segmentation) {
+		if (buf.length() >= MAX)
+			buf = new String(buf.substring(0,MAX-1));
+		int len = buf.length();
+		if (cursor + len + 1 <= MAX) {
+			System.arraycopy(buf.toCharArray(), 0, buffer, cursor, len);
+			buffer[cursor+len+1] = segmentation;
+			cursor += len + 1;
+		} else {
+			// copy util end of array
+			System.arraycopy(buf.toCharArray(), 0, buffer, cursor, MAX - cursor);
+			// copy and overwrite head part
+			System.arraycopy(buf.toCharArray(), 0, buffer, 0, len - (MAX - cursor));
+			buffer[len-(MAX - cursor)+1] = segmentation;
+			cursor = len - (MAX - cursor) + 1;
+		}
+		size += len;
+	}
+
+	@Override
+	public boolean empty() {
+		return size == 0;
+	}
+
+	@Override
+	public void clear() {
+		size = 0 ;
+		cursor = 0;
+	}
+
+	@Override
+	public String getString() {
+		if (size <= MAX)
+			return new String(buffer,0,size);
+		else 
+			return new StringBuilder(MAX).append(buffer,cursor,MAX - cursor).append(buffer,0,cursor).toString();
+	}
+
+}
