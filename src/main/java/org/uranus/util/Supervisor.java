@@ -4,6 +4,16 @@ import org.apache.log4j.Logger;
 
 public abstract class Supervisor
 {
+	public static void main(String[] arg) {
+		int i = 2000;
+		while(i--!=0)
+			System.out.println(func());
+	}
+	public static long func() {
+		return s++;
+	}
+	private static long s = 0L;
+
 	private static Logger logger = Logger.getLogger(Supervisor.class);
 
 	private String threadName;
