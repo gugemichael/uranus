@@ -1,9 +1,12 @@
 package org.uranus.test;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -12,11 +15,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import org.apache.commons.net.ftp.LFTPClient;
 import org.apache.log4j.Logger;
 
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
+import com.taobao.lz.gmagnet.agent.executor.StopAble;
+import com.taobao.lz.gmagnet.agent.file.FileService;
+import com.taobao.lz.gmagnet.agent.utils.IOUtils;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 class Dev {
 
@@ -30,7 +43,7 @@ class Dev {
 
 public class Uranus
 {
-	private static Logger logger = Logger.getLogger(Uranus.class);
+//	private static Logger logger = Logger.getLogger(Uranus.class);
 
 	public static void main(String[] args ) throws FileNotFoundException, InterruptedException , IOException
 	{
@@ -233,17 +246,49 @@ public class Uranus
 //				logger.debug("[asdfasdf]asdfasdfasdfasdfasdfasdfasd asdsf asd ");
 //			System.out.println("use " + (System.currentTimeMillis() - t));
 //		}
+//		
+//		int n = 10000000;
+//		double fpp = 0.000001;
+//		BloomFilter<Integer> friends = BloomFilter.create(Funnels.integerFunnel(), n, fpp);
+//
+//		System.out.println(friends.mightContain(1));
+//		long bits = (long) (-n * Math.log(fpp) / (Math.log(2) * Math.log(2)));
+//		System.out.println(bits / 8);
+//		System.out.println(Math.max(1, (int) Math.round(bits / n * Math.log(2))));
 		
-		int n = 10000000;
-		double fpp = 0.000001;
-		BloomFilter<Integer> friends = BloomFilter.create(Funnels.integerFunnel(), n, fpp);
 
-		System.out.println(friends.mightContain(1));
-		long bits = (long) (-n * Math.log(fpp) / (Math.log(2) * Math.log(2)));
-		System.out.println(bits / 8);
-		System.out.println(Math.max(1, (int) Math.round(bits / n * Math.log(2))));
-		
-		
+		ChannelSftp sftp = null;
+		try {
+			String downloadFile = "/home/hadoop/1.txty";
+			String dstFile = "/tmp/ftpxxx";
+			JSch jsch = new JSch();
+			Session session = jsch.getSession("other", "121.201.4.17", 20022);
+			session.setPassword("kuaidi@#123");
+			Properties sshConfig = new Properties();
+			sshConfig.put("StrictHostKeyChecking", "no");
+			session.setConfig(sshConfig);
+			session.connect();
+			System.out.println("Session connected.");
+			System.out.println("Opening Channel.");
+			Channel channel = session.openChannel("sftp");
+			channel.connect();
+			sftp = (ChannelSftp) channel;
+			System.out.println("Connected !! ");
+			
+			FileOutputStream outFile = new FileOutputStream(new File(dstFile));
+			sftp.get(downloadFile, outFile);
+			
+			outFile.flush();
+			outFile.close();
+			
+			System.out.println(String.format("ftp from  %s download to %s",downloadFile,dstFile));
+			
+		} catch (Exception e) {
+			
+			System.out.println("error : " + e);
+
+		}
+
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>\n");
 		System.out.println("Complete !!!");	
 		
