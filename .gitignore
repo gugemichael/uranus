@@ -10,4 +10,5 @@ bin
 .classpath
 .project
 target
+.settings
 .AppleDouble
