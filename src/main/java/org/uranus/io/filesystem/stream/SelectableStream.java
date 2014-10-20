@@ -1,4 +1,4 @@
-package org.uranus.io.filesystem.poll;
+package org.uranus.io.filesystem.stream;
 
 import java.io.BufferedReader;
 
