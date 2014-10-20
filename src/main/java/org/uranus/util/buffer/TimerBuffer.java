@@ -1,4 +1,4 @@
-package org.uranus.buffer;
+package org.uranus.util.buffer;
 
 import org.uranus.util.time.TimeSpec;
 
@@ -33,5 +33,7 @@ public abstract class TimerBuffer
 	public boolean strike() {
 		return ( - time > maxTime && size!=0) || size >= maxSize;
 	}
+	
+	abstract protected void updateSize(); 
 
 }

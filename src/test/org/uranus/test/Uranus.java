@@ -9,6 +9,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Date;
@@ -16,15 +19,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.net.ftp.LFTPClient;
 import org.apache.log4j.Logger;
 
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
-import com.taobao.lz.gmagnet.agent.executor.StopAble;
-import com.taobao.lz.gmagnet.agent.file.FileService;
-import com.taobao.lz.gmagnet.agent.utils.IOUtils;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -45,7 +45,7 @@ public class Uranus
 {
 //	private static Logger logger = Logger.getLogger(Uranus.class);
 
-	public static void main(String[] args ) throws FileNotFoundException, InterruptedException , IOException
+	public static void main(String[] args ) throws FileNotFoundException, InterruptedException , IOException, ParseException
 	{
 		
 //		List<String> a = new ArrayList<String>();
@@ -257,38 +257,20 @@ public class Uranus
 //		System.out.println(Math.max(1, (int) Math.round(bits / n * Math.log(2))));
 		
 
-		ChannelSftp sftp = null;
-		try {
-			String downloadFile = "/home/hadoop/1.txty";
-			String dstFile = "/tmp/ftpxxx";
-			JSch jsch = new JSch();
-			Session session = jsch.getSession("other", "121.201.4.17", 20022);
-			session.setPassword("kuaidi@#123");
-			Properties sshConfig = new Properties();
-			sshConfig.put("StrictHostKeyChecking", "no");
-			session.setConfig(sshConfig);
-			session.connect();
-			System.out.println("Session connected.");
-			System.out.println("Opening Channel.");
-			Channel channel = session.openChannel("sftp");
-			channel.connect();
-			sftp = (ChannelSftp) channel;
-			System.out.println("Connected !! ");
-			
-			FileOutputStream outFile = new FileOutputStream(new File(dstFile));
-			sftp.get(downloadFile, outFile);
-			
-			outFile.flush();
-			outFile.close();
-			
-			System.out.println(String.format("ftp from  %s download to %s",downloadFile,dstFile));
-			
-		} catch (Exception e) {
-			
-			System.out.println("error : " + e);
-
-		}
-
+		AtomicReference<Dev> dev = new AtomicReference<Dev>();
+		dev.compareAndSet(null, new Dev());
+		
+		dev.get().foo(1);
+		
+		System.out.println("asdf".replaceAll(".", "*"));
+		
+		Date date=new Date("20140414"); 
+		
+		DateFormat df = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss");
+		System.out.println(df.format(date));
+		
+		
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>\n");
 		System.out.println("Complete !!!");	
 		

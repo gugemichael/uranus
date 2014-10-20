@@ -1,4 +1,4 @@
-package org.uranus.buffer;
+package org.uranus.util.buffer;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -45,7 +45,13 @@ public class LinkQueueSlideWindowBuffer implements SlideWindowBuffer
 	 */
 	@Override
 	public void append(String raw) {
-		append(raw, '\n');
+		String buf = raw;
+		if (raw.length()>MAX_APPEND)
+			buf = new String(raw.substring(0,MAX_APPEND));		/* NEW will avoid substring memory leak */
+		if (lastWriteBlock.isFull)
+			addNewBlock();
+		lastWriteBlock.block.append(buf);
+		lastWriteBlock.isFull = lastWriteBlock.block.length() >= Block.BLOCK_SIZE;
 	}
 	
 	/**
@@ -54,8 +60,8 @@ public class LinkQueueSlideWindowBuffer implements SlideWindowBuffer
 	@Override
 	public void append(String raw,char segmentation) {
 		String buf = raw;
-		if (raw.length()>2048)
-			buf = new String(raw.substring(0,2048));		/* NEW will avoid substring memory leak */
+		if (raw.length()>MAX_APPEND)
+			buf = new String(raw.substring(0,MAX_APPEND));		/* NEW will avoid substring memory leak */
 		if (lastWriteBlock.isFull)
 			addNewBlock();
 		lastWriteBlock.block.append(buf);
@@ -75,7 +81,7 @@ public class LinkQueueSlideWindowBuffer implements SlideWindowBuffer
 	}
 
 	@Override
-	public boolean empty() {
+	public boolean isEmpty() {
 		return blockList.peek().block.length() == 0;
 	}
 

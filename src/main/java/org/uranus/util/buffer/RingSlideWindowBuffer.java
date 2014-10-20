@@ -1,4 +1,4 @@
-package org.uranus.buffer;
+package org.uranus.util.buffer;
 
 public class RingSlideWindowBuffer implements SlideWindowBuffer
 {
@@ -14,7 +14,20 @@ public class RingSlideWindowBuffer implements SlideWindowBuffer
 	
 	@Override
 	public void append(String buf) {
-		append(buf,'\n');
+		if (buf.length() >= MAX)
+			buf = new String(buf.substring(0,MAX-1));
+		int len = buf.length();
+		if (cursor + len <= MAX) {
+			System.arraycopy(buf.toCharArray(), 0, buffer, cursor, len);
+			cursor += len;
+		} else {
+			// copy util end of array
+			System.arraycopy(buf.toCharArray(), 0, buffer, cursor, MAX - cursor);
+			// copy and overwrite head part
+			System.arraycopy(buf.toCharArray(), 0, buffer, 0, len - (MAX - cursor));
+			cursor = len - (MAX - cursor) ;
+		}
+		size += len;
 	}
 
 	@Override
@@ -38,7 +51,7 @@ public class RingSlideWindowBuffer implements SlideWindowBuffer
 	}
 
 	@Override
-	public boolean empty() {
+	public boolean isEmpty() {
 		return size == 0;
 	}
 
