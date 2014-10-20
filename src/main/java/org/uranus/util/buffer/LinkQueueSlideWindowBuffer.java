@@ -13,7 +13,7 @@ public class LinkQueueSlideWindowBuffer implements SlideWindowBuffer
 	/**
 	 * Max blocks for each SlideWindowBuffer
 	 */
-	public int MAX_BLOCKS = 32;
+	public int max_blocks = 32;
 
 	private Block lastWriteBlock;
 	private Queue<Block> blockList = new LinkedList<Block>();
@@ -32,7 +32,7 @@ public class LinkQueueSlideWindowBuffer implements SlideWindowBuffer
 	}
 	
 	public LinkQueueSlideWindowBuffer(int max_blocks) {
-		MAX_BLOCKS = max_blocks;
+		this.max_blocks = max_blocks;
 		addNewBlock();
 	}
 	
@@ -94,7 +94,7 @@ public class LinkQueueSlideWindowBuffer implements SlideWindowBuffer
 	
 	private void addNewBlock() {
 		// evict (pop) and reuse
-		if (blockList.size() >= MAX_BLOCKS) {
+		if (blockList.size() >= max_blocks) {
 			lastWriteBlock = blockList.poll();
 			lastWriteBlock.clear();
 		} else 

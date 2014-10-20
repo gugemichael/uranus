@@ -72,64 +72,63 @@ abstract class AbstractConfigureLoader<E> implements ConfigureLoader<E>
 		Properties prop = new Properties();
 		String v = null;
 		long number;
-			prop.load(new StringReader(conf));
-			int count = prop.size(), match = 0;
-			for (Field x : c.getDeclaredFields()) {
-				// must static
-				if ((x.getModifiers() & Modifier.STATIC) == 0 || (x.getModifiers() & Modifier.PUBLIC) == 0)
-					continue;
-				if (x.getAnnotation(ConfigureKey.class) != null) {
-					v = prop.getProperty(x.getAnnotation(ConfigureKey.class).value());
-					if (v == null) {
-						if (option == ConfigureOptional.DISCARD)
-							continue;
-						else if (option == ConfigureOptional.ABORT)
-							return false;
-						else if (option == ConfigureOptional.EXCEPTION)
-							throw new IllegalAccessException(x.getName());
-					}
-				} else 
-					continue;
+		prop.load(new StringReader(conf));
+		int count = prop.size(), match = 0;
+		for (Field x : c.getDeclaredFields()) {
+			// must static
+			if ((x.getModifiers() & Modifier.STATIC) == 0 || (x.getModifiers() & Modifier.PUBLIC) == 0)
+				continue;
+			if (x.getAnnotation(ConfigureKey.class) != null) {
+				v = prop.getProperty(x.getAnnotation(ConfigureKey.class).value());
+				if (v == null) {
+					if (option == ConfigureOptional.DISCARD)
+						continue;
+					else if (option == ConfigureOptional.ABORT)
+						return false;
+					else if (option == ConfigureOptional.EXCEPTION)
+						throw new IllegalAccessException(x.getName());
+				}
+			} else 
+				continue;
 
-				Class<?> type = x.getType();
+			Class<?> type = x.getType();
 
-				if (type == int.class || type == short.class || type == long.class) {
-					try {
-						number = readNumber(v);
-						if (type == int.class)
-							x.setInt(null, (int) number);
-						else if (type == short.class)
-							x.setShort(null, (short) number);
-						else if (type == long.class)
-							x.setLong(null, number);
-					} catch (NumberFormatException e) {
-						throw new UnknownFormatConversionException(x.getName());
-					}
-				} else if (type == boolean.class) {
-					try {					
-						x.setBoolean(null, readBoolean(v));
-					} catch (UnknownFormatConversionException e) {
-						throw e;
-					}
-				} else if (type == float.class || type == double.class) {
-					try {
-						if (type == float.class)
-							x.setFloat(null, Float.parseFloat(v));
-						else if (type == double.class)
-							x.setDouble(null, Double.parseDouble(v));
-					} catch(NumberFormatException e) {
-						throw new UnknownFormatConversionException(x.getName());
-					}
-				} else if (type == String.class)
-					x.set(null, v);
-				else
+			if (type == int.class || type == short.class || type == long.class) {
+				try {
+					number = readNumber(v);
+					if (type == int.class)
+						x.setInt(null, (int) number);
+					else if (type == short.class)
+						x.setShort(null, (short) number);
+					else if (type == long.class)
+						x.setLong(null, number);
+				} catch (NumberFormatException e) {
 					throw new UnknownFormatConversionException(x.getName());
+				}
+			} else if (type == boolean.class) {
+				try {					
+					x.setBoolean(null, readBoolean(v));
+				} catch (UnknownFormatConversionException e) {
+					throw e;
+				}
+			} else if (type == float.class || type == double.class) {
+				try {
+					if (type == float.class)
+						x.setFloat(null, Float.parseFloat(v));
+					else if (type == double.class)
+						x.setDouble(null, Double.parseDouble(v));
+				} catch(NumberFormatException e) {
+					throw new UnknownFormatConversionException(x.getName());
+				}
+			} else if (type == String.class)
+				x.set(null, v);
+			else
+				throw new UnknownFormatConversionException(x.getName());
 
-				match++;
-			}
-			
-			System.out.println(match + "" + count);
-			return match == count;
+			match++;
+		}
+
+		return match == count;
 	}
 
 	/**

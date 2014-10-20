@@ -3,6 +3,8 @@ package org.uranus.test;
 import java.io.IOException;
 import java.util.UnknownFormatConversionException;
 
+import org.uranus.thread.ThreadsGroup;
+import org.uranus.util.Hypervisor;
 import org.uranus.util.buffer.RingSlideWindowBuffer;
 import org.uranus.util.buffer.SlideWindowBuffer;
 import org.uranus.util.config.ConfigureLoader;
@@ -13,10 +15,52 @@ public class UranusUseCase
 {
 	
 	public static void main(String[] args) {
-		//testSlideWindowBuffer();
-		testConfigureLoader();
+//		testSlideWindowBuffer();
+//		testConfigureLoader();
+//		testThreadGroup();
+		testHypervisor();
 		
 		System.out.println("[ DONE ]");
+	}
+	
+	private static void testHypervisor() {
+		new Hypervisor(3,false) {
+			@Override
+			protected void runningGuard() throws Exception {
+				int i = 10;
+				while(i-- != 0) {
+					System.out.println(100/(i+1));
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+					}
+				}
+			}
+			@Override
+			protected void prepare() {
+				System.out.println("prepare : " + "lalalallala");
+			}
+			@Override
+			protected void onException(Exception ex) {
+				System.out.println("error : " + ex);
+			}
+		}.startup();
+	}
+	
+	private static void testThreadGroup() {
+		new ThreadsGroup(10, "MyThread") {
+			@Override
+			protected void run(int threadID) {
+				int i = 10;
+				while(i-- != 0) {
+					System.out.println(threadID);
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+					}
+				}
+			}
+		}.start().join();
 	}
 	
 	private static void testConfigureLoader() {
