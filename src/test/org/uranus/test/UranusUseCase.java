@@ -9,6 +9,7 @@ import org.uranus.util.buffer.RingSlideWindowBuffer;
 import org.uranus.util.buffer.SlideWindowBuffer;
 import org.uranus.util.config.ConfigureLoader;
 import org.uranus.util.config.ConfigureOptional;
+import org.uranus.util.config.HumanReadableConfigureLoader;
 import org.uranus.util.config.KVConfigureLoader;
 
 public class UranusUseCase
@@ -16,9 +17,9 @@ public class UranusUseCase
 	
 	public static void main(String[] args) {
 //		testSlideWindowBuffer();
-//		testConfigureLoader();
+		testConfigureLoader();
 //		testThreadGroup();
-		testHypervisor();
+//		testHypervisor();
 		
 		System.out.println("[ DONE ]");
 	}
@@ -64,9 +65,12 @@ public class UranusUseCase
 	}
 	
 	private static void testConfigureLoader() {
-		ConfigureLoader<ServerConf> conf = new KVConfigureLoader<ServerConf>(ConfigureOptional.DISCARD);
+//		ConfigureLoader conf = new KVConfigureLoader(ConfigureOptional.DISCARD);
+		ConfigureLoader conf = new HumanReadableConfigureLoader(ConfigureOptional.DISCARD);
 		try {
-			System.out.println(conf.parse(ServerConf.class, "aaa=111111\nnum=1\nname=aaasadfa\nisgood=true"));
+			System.out.println(conf.parse(ServerConf.class, "aaa=111111\nnum=1\nname=aaasadfa\nisgood=on"));
+			System.err.println(ServerConf.aaa);
+			System.err.println(ServerConf.isGood);
 		} catch (IOException e) {
 			System.out.println(e);
 		} catch (UnknownFormatConversionException e) {

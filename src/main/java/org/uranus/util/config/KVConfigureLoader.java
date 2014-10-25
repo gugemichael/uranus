@@ -2,14 +2,12 @@ package org.uranus.util.config;
 
 import java.util.UnknownFormatConversionException;
 
-public class KVConfigureLoader<E> extends AbstractConfigureLoader<E>
+public class KVConfigureLoader extends AbstractConfigureLoader
 {
 	public KVConfigureLoader(ConfigureOptional option) {
 		super(option);
 	}
 	
-	public KVConfigureLoader() {
-	}
 	
 	/**
 	 *	support "true","false" defaultly 
