@@ -8,8 +8,10 @@ public class HumanReadableConfigureLoader extends AbstractConfigureLoader
 {
 	public static long RADIX = 1024L;
 	
-	private static final Map<Character, Long> capacityMap = new HashMap<Character, Long>() {{
-		put('k', 1024L);
+	private static final Map<Character, Long> capacityMap = new HashMap<Character, Long>() {
+		private static final long serialVersionUID = 1387202577810325534L;
+	{
+		put('k', RADIX);
 		put('K', get('k'));
 		put('m', get('k') * RADIX);
 		put('M', get('m'));
@@ -39,7 +41,7 @@ public class HumanReadableConfigureLoader extends AbstractConfigureLoader
 			throw new NumberFormatException("value is empty !");
 		Long flag = capacityMap.get(v.charAt(v.length()-1));
 		if (flag != null && v.length() >= 2)
-			return Long.parseLong(v.substring(0, v.length()-2)) * flag;
+			return Long.parseLong(v.substring(0, v.length()-1)) * flag;
 		else
 			return Long.parseLong(v);
 	}

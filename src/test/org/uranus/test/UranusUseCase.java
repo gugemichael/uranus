@@ -68,7 +68,7 @@ public class UranusUseCase
 //		ConfigureLoader conf = new KVConfigureLoader(ConfigureOptional.DISCARD);
 		ConfigureLoader conf = new HumanReadableConfigureLoader(ConfigureOptional.DISCARD);
 		try {
-			System.out.println(conf.parse(ServerConf.class, "aaa=111111\nnum=1\nname=aaasadfa\nisgood=on"));
+			System.out.println(conf.parse(ServerConf.class, "aaa=1m\nnum=1\nname=aaasadfa\nisgood=on"));
 			System.err.println(ServerConf.aaa);
 			System.err.println(ServerConf.isGood);
 		} catch (IOException e) {
