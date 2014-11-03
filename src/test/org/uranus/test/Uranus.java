@@ -19,6 +19,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.log4j.Logger;
@@ -41,12 +51,104 @@ class Dev {
 
 }
 
+enum AC {
+	BASE_ORDER(1000),a(1001);
+	int type;
+	AC(int i) {
+		type = i;
+	}
+}
+
+class AA {
+}
+
+class BB {
+	private AA a;
+	public void doSomething( AA a ) {
+		this.a = a;
+	}
+}
+
 public class Uranus
 {
-//	private static Logger logger = Logger.getLogger(Uranus.class);
 
-	public static void main(String[] args ) throws FileNotFoundException, InterruptedException , IOException, ParseException
-	{
+	public static void main(String[] args) {
+
+//        ThreadPoolExecutor serv =  new ThreadPoolExecutor(4,4,
+//                60L, TimeUnit.SECONDS,
+//                new SynchronousQueue<Runnable>());
+//        serv.setRejectedExecutionHandler(new RejectedExecutionHandler() {
+//			@Override
+//			public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+//				try {
+//					executor.getQueue().put(r);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+
+		final BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(1);
+		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Runnable r = null;
+				while((r = queue.poll()) != null) {
+					System.out.println("run ");
+					r.run();
+				}
+			}
+		});
+		
+		for (int i = 0; i < 10; i++) {
+			try {
+				queue.put(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						System.out.println("1");
+					}
+				});
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		}
+        
+		System.out.println("DONE");
+        
+	}
+	
+	public static void aMethod() {
+		AA aObj = new AA();
+		BB bObj = new BB();
+		bObj.doSomething(aObj);
+	}
+
+
+//	private static Logger logger = Logger.getLogger(Uranus.class);
+	
+//	public static void main(String[] args ) throws FileNotFoundException, InterruptedException , IOException, ParseException
+//	{
+//		
+//		while(true) {
+//			foo();
+//		}
+		
+//		int x = 1001;
+//		int index = (x-A.BASE_ORDER.type);
+//		A expect = A.values()[index];
+//		
+//		System.out.println(A.valueOf("a"));
+////		System.out.println(A.valueOf(A.class, ));
+//		System.out.println(A.BASE_ORDER.type + A.a.ordinal());
 		
 //		List<String> a = new ArrayList<String>();
 		
@@ -257,24 +359,24 @@ public class Uranus
 //		System.out.println(Math.max(1, (int) Math.round(bits / n * Math.log(2))));
 		
 
-		AtomicReference<Dev> dev = new AtomicReference<Dev>();
-		dev.compareAndSet(null, new Dev());
+//		AtomicReference<Dev> dev = new AtomicReference<Dev>();
+//		dev.compareAndSet(null, new Dev());
+//		
+//		dev.get().foo(1);
+//		
+//		System.out.println("asdf".replaceAll(".", "*"));
+//		
+//		Date date=new Date("20140414"); 
+//		
+//		DateFormat df = new SimpleDateFormat(
+//                "yyyy-MM-dd HH:mm:ss");
+//		System.out.println(df.format(date));
 		
-		dev.get().foo(1);
 		
-		System.out.println("asdf".replaceAll(".", "*"));
+//		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>\n");
+//		System.out.println("Complete !!!");	
 		
-		Date date=new Date("20140414"); 
-		
-		DateFormat df = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss");
-		System.out.println(df.format(date));
-		
-		
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>\n");
-		System.out.println("Complete !!!");	
-		
-	}
+//	}
 
 	private static long s = 0L;
 
