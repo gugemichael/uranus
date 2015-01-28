@@ -1,5 +1,5 @@
 package org.uranus.util.config;
 
-public enum ConfigureOptional {
+public enum ConfigurePolicy {
 	DISCARD, ABORT, EXCEPTION
 }

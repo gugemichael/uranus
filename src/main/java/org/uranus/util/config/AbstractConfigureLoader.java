@@ -7,7 +7,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UnknownFormatConversionException;
 
 
@@ -19,16 +23,18 @@ import java.util.UnknownFormatConversionException;
  * 		float/double ==> 10.01
  * 		boolean ==> true,false
  * 
+ * @author Michael
+ * 
  */
 public abstract class AbstractConfigureLoader implements ConfigureLoader
 {
-	private final ConfigureOptional option;
+	private final ConfigurePolicy option;
 	
 	public AbstractConfigureLoader() {
-		this.option = ConfigureOptional.DISCARD;
+		this.option = ConfigurePolicy.DISCARD;
 	}
 	
-	public AbstractConfigureLoader(ConfigureOptional option) {
+	public AbstractConfigureLoader(ConfigurePolicy option) {
 		this.option = option;
 	}
 
@@ -37,6 +43,12 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 	 */
 	@Override
 	public boolean parse(Class<?> c, String conf) throws IllegalAccessException, UnknownFormatConversionException, IOException {
+		if (c == null || conf == null) {
+			if (option == ConfigurePolicy.DISCARD || option == ConfigurePolicy.ABORT)
+				return false;
+			else if (option == ConfigurePolicy.EXCEPTION)
+				throw new IOException("inject class or config is null");
+		}
 		Properties prop = new Properties();
 		String v = null;
 		long number;
@@ -46,18 +58,18 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 			// must static
 			if ((x.getModifiers() & Modifier.STATIC) == 0 || (x.getModifiers() & Modifier.PUBLIC) == 0)
 				continue;
-			if (x.getAnnotation(ConfigureKey.class) != null) {
-				v = prop.getProperty(x.getAnnotation(ConfigureKey.class).value());
-				if (v == null) {
-					if (option == ConfigureOptional.DISCARD)
-						continue;
-					else if (option == ConfigureOptional.ABORT)
-						return false;
-					else if (option == ConfigureOptional.EXCEPTION)
-						throw new IllegalAccessException(x.getName());
-				}
-			} else 
+			if (x.getAnnotation(ConfigureKey.class) == null) 
 				continue;
+			
+			v = prop.getProperty(x.getAnnotation(ConfigureKey.class).value());
+			if (v == null) {
+				if (option == ConfigurePolicy.DISCARD)
+					continue;
+				else if (option == ConfigurePolicy.ABORT)
+					return false;
+				else if (option == ConfigurePolicy.EXCEPTION)
+					throw new IllegalAccessException(x.getName());
+			}
 
 			Class<?> type = x.getType();
 
@@ -71,13 +83,23 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 					else if (type == long.class)
 						x.setLong(null, number);
 				} catch (NumberFormatException e) {
-					throw new UnknownFormatConversionException(x.getName());
+					if (option == ConfigurePolicy.DISCARD)
+						continue;
+					else if (option == ConfigurePolicy.ABORT)
+						return false;
+					else if (option == ConfigurePolicy.EXCEPTION)
+						throw new UnknownFormatConversionException(x.getName());
 				}
 			} else if (type == boolean.class) {
 				try {					
 					x.setBoolean(null, readBoolean(v));
 				} catch (UnknownFormatConversionException e) {
-					throw e;
+					if (option == ConfigurePolicy.DISCARD)
+						continue;
+					else if (option == ConfigurePolicy.ABORT)
+						return false;
+					else if (option == ConfigurePolicy.EXCEPTION)
+						throw e;
 				}
 			} else if (type == float.class || type == double.class) {
 				try {
@@ -86,12 +108,28 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 					else if (type == double.class)
 						x.setDouble(null, Double.parseDouble(v));
 				} catch(NumberFormatException e) {
-					throw new UnknownFormatConversionException(x.getName());
+					if (option == ConfigurePolicy.DISCARD)
+						continue;
+					else if (option == ConfigurePolicy.ABORT)
+						return false;
+					else if (option == ConfigurePolicy.EXCEPTION)
+						throw new UnknownFormatConversionException(x.getName());
 				}
 			} else if (type == String.class)
-				x.set(null, v);
-			else
-				throw new UnknownFormatConversionException(x.getName());
+				x.set(null, v.trim());
+			else if (type == List.class)
+				x.set(null, Arrays.asList(v.trim().split(",")));
+			else if (type == Set.class)
+				x.set(null, new HashSet<String>(Arrays.asList(v.trim().split(","))));
+			else {
+				if (option == ConfigurePolicy.DISCARD)
+					continue;
+				else if (option == ConfigurePolicy.ABORT)
+					return false;
+				else if (option == ConfigurePolicy.EXCEPTION)
+					throw new UnknownFormatConversionException(x.getName());
+			}
+				
 
 			match++;
 		}
@@ -104,8 +142,12 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 	 */
 	@Override
 	public boolean parse(Class<?> c, File conf) throws UnknownFormatConversionException, IOException, IllegalAccessException{
-		if (!conf.exists())
-			return false;
+		if (c == null || conf == null) {
+			if (option == ConfigurePolicy.DISCARD || option == ConfigurePolicy.ABORT)
+				return false;
+			else if (option == ConfigurePolicy.EXCEPTION)
+				throw new IOException("inject class or config is null");
+		}
 		StringBuffer buffer = new StringBuffer();
 		BufferedReader reader = null;
 		try {
@@ -115,12 +157,14 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 				String line = reader.readLine();
 				if (line == null)
 					break;
-				else
-					buffer.append(line);
+				buffer.append(line).append("\n");
 			}
 			return parse(c, buffer.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (option == ConfigurePolicy.DISCARD || option == ConfigurePolicy.ABORT)
+				return false;
+			else if (option == ConfigurePolicy.EXCEPTION)
+				throw e;
 		} finally {
 			if (reader != null) {
 				try {

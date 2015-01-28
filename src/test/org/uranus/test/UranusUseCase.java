@@ -8,7 +8,7 @@ import org.uranus.util.Hypervisor;
 import org.uranus.util.buffer.RingSlideWindowBuffer;
 import org.uranus.util.buffer.SlideWindowBuffer;
 import org.uranus.util.config.ConfigureLoader;
-import org.uranus.util.config.ConfigureOptional;
+import org.uranus.util.config.ConfigurePolicy;
 import org.uranus.util.config.HumanReadableConfigureLoader;
 import org.uranus.util.config.KVConfigureLoader;
 

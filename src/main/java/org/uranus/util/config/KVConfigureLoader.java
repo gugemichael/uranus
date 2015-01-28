@@ -4,7 +4,7 @@ import java.util.UnknownFormatConversionException;
 
 public class KVConfigureLoader extends AbstractConfigureLoader
 {
-	public KVConfigureLoader(ConfigureOptional option) {
+	public KVConfigureLoader(ConfigurePolicy option) {
 		super(option);
 	}
 	
