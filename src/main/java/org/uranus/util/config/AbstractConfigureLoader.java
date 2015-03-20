@@ -8,11 +8,12 @@ import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UnknownFormatConversionException;
+
+import com.ali.com.google.common.collect.Sets;
 
 
 /**
@@ -28,13 +29,13 @@ import java.util.UnknownFormatConversionException;
  */
 public abstract class AbstractConfigureLoader implements ConfigureLoader
 {
-	private final ConfigurePolicy option;
+	private final ConfigureOptional option;
 	
 	public AbstractConfigureLoader() {
-		this.option = ConfigurePolicy.DISCARD;
+		this.option = ConfigureOptional.DISCARD;
 	}
 	
-	public AbstractConfigureLoader(ConfigurePolicy option) {
+	public AbstractConfigureLoader(ConfigureOptional option) {
 		this.option = option;
 	}
 
@@ -43,12 +44,8 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 	 */
 	@Override
 	public boolean parse(Class<?> c, String conf) throws IllegalAccessException, UnknownFormatConversionException, IOException {
-		if (c == null || conf == null) {
-			if (option == ConfigurePolicy.DISCARD || option == ConfigurePolicy.ABORT)
-				return false;
-			else if (option == ConfigurePolicy.EXCEPTION)
-				throw new IOException("inject class or config is null");
-		}
+		if (c == null || conf == null)
+			return false;
 		Properties prop = new Properties();
 		String v = null;
 		long number;
@@ -58,22 +55,22 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 			// must static
 			if ((x.getModifiers() & Modifier.STATIC) == 0 || (x.getModifiers() & Modifier.PUBLIC) == 0)
 				continue;
-			if (x.getAnnotation(ConfigureKey.class) == null) 
+			if (x.getAnnotation(ConfigureKey.class) != null) {
+				v = prop.getProperty(x.getAnnotation(ConfigureKey.class).value());
+				if (v == null) {
+					if (option == ConfigureOptional.DISCARD)
+						continue;
+					else if (option == ConfigureOptional.ABORT)
+						return false;
+					else if (option == ConfigureOptional.EXCEPTION)
+						throw new IllegalAccessException(x.getName());
+				}
+			} else 
 				continue;
-			
-			v = prop.getProperty(x.getAnnotation(ConfigureKey.class).value());
-			if (v == null) {
-				if (option == ConfigurePolicy.DISCARD)
-					continue;
-				else if (option == ConfigurePolicy.ABORT)
-					return false;
-				else if (option == ConfigurePolicy.EXCEPTION)
-					throw new IllegalAccessException(x.getName());
-			}
 
 			Class<?> type = x.getType();
 
-			if (type == int.class || type == short.class || type == long.class) {
+			if (type == int.class || type == short.class || type == long.class) {			/* number */
 				try {
 					number = readNumber(v);
 					if (type == int.class)
@@ -83,53 +80,31 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 					else if (type == long.class)
 						x.setLong(null, number);
 				} catch (NumberFormatException e) {
-					if (option == ConfigurePolicy.DISCARD)
-						continue;
-					else if (option == ConfigurePolicy.ABORT)
-						return false;
-					else if (option == ConfigurePolicy.EXCEPTION)
-						throw new UnknownFormatConversionException(x.getName());
+					throw new UnknownFormatConversionException(x.getName());
 				}
-			} else if (type == boolean.class) {
+			} else if (type == boolean.class) {				/* boolean */
 				try {					
 					x.setBoolean(null, readBoolean(v));
 				} catch (UnknownFormatConversionException e) {
-					if (option == ConfigurePolicy.DISCARD)
-						continue;
-					else if (option == ConfigurePolicy.ABORT)
-						return false;
-					else if (option == ConfigurePolicy.EXCEPTION)
-						throw e;
+					throw e;
 				}
-			} else if (type == float.class || type == double.class) {
+			} else if (type == float.class || type == double.class) {			/* float */
 				try {
 					if (type == float.class)
 						x.setFloat(null, Float.parseFloat(v));
 					else if (type == double.class)
 						x.setDouble(null, Double.parseDouble(v));
 				} catch(NumberFormatException e) {
-					if (option == ConfigurePolicy.DISCARD)
-						continue;
-					else if (option == ConfigurePolicy.ABORT)
-						return false;
-					else if (option == ConfigurePolicy.EXCEPTION)
-						throw new UnknownFormatConversionException(x.getName());
-				}
-			} else if (type == String.class)
-				x.set(null, v.trim());
-			else if (type == List.class)
-				x.set(null, Arrays.asList(v.trim().split(",")));
-			else if (type == Set.class)
-				x.set(null, new HashSet<String>(Arrays.asList(v.trim().split(","))));
-			else {
-				if (option == ConfigurePolicy.DISCARD)
-					continue;
-				else if (option == ConfigurePolicy.ABORT)
-					return false;
-				else if (option == ConfigurePolicy.EXCEPTION)
 					throw new UnknownFormatConversionException(x.getName());
-			}
-				
+				}
+			} else if (type == String.class)							/* string */
+				x.set(null, v.trim());
+			else if (type == List.class) {								/* List */
+				x.set(null, Arrays.asList(v.trim().split(",")));
+			} else if (type == Set.class) {							/* Set */
+				x.set(null, Sets.newHashSet(v.trim().split(",")));
+			} else
+				throw new UnknownFormatConversionException(x.getName());
 
 			match++;
 		}
@@ -142,12 +117,8 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 	 */
 	@Override
 	public boolean parse(Class<?> c, File conf) throws UnknownFormatConversionException, IOException, IllegalAccessException{
-		if (c == null || conf == null) {
-			if (option == ConfigurePolicy.DISCARD || option == ConfigurePolicy.ABORT)
-				return false;
-			else if (option == ConfigurePolicy.EXCEPTION)
-				throw new IOException("inject class or config is null");
-		}
+		if (c == null || conf == null)
+			return false;
 		StringBuffer buffer = new StringBuffer();
 		BufferedReader reader = null;
 		try {
@@ -157,14 +128,13 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 				String line = reader.readLine();
 				if (line == null)
 					break;
-				buffer.append(line).append("\n");
+				else
+					buffer.append(line);
+					buffer.append("\n");
 			}
 			return parse(c, buffer.toString());
 		} catch (IOException e) {
-			if (option == ConfigurePolicy.DISCARD || option == ConfigurePolicy.ABORT)
-				return false;
-			else if (option == ConfigurePolicy.EXCEPTION)
-				throw e;
+			e.printStackTrace();
 		} finally {
 			if (reader != null) {
 				try {

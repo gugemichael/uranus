@@ -21,7 +21,7 @@ public class HumanReadableConfigureLoader extends AbstractConfigureLoader
 		put('T', get('t'));
 	}};
 
-	public HumanReadableConfigureLoader(ConfigurePolicy option) {
+	public HumanReadableConfigureLoader(ConfigureOptional option) {
 		super(option);
 	}
 	
