@@ -8,12 +8,11 @@ import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UnknownFormatConversionException;
-
-import com.ali.com.google.common.collect.Sets;
 
 
 /**
@@ -102,7 +101,7 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 			else if (type == List.class) {								/* List */
 				x.set(null, Arrays.asList(v.trim().split(",")));
 			} else if (type == Set.class) {							/* Set */
-				x.set(null, Sets.newHashSet(v.trim().split(",")));
+				x.set(null, new HashSet<String>(Arrays.asList(v.trim().split(","))));
 			} else
 				throw new UnknownFormatConversionException(x.getName());
 

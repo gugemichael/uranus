@@ -5,12 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 public class StreamSelector<T extends SelectableStream> implements Selector<T>
 {
-	private static final Logger logger = Logger.getLogger(StreamSelector.class);
-
 	/**
 	 * be checked streamings .
 	 * 
@@ -40,7 +36,7 @@ public class StreamSelector<T extends SelectableStream> implements Selector<T>
 				s.readyCallback();
 			}
 		} catch (IOException e) {
-			logger.fatal("[StreamSelector] select error : " + e.getMessage());
+			e.printStackTrace();
 		}
 		
 		return streams;
