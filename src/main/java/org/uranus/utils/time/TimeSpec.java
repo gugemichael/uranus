@@ -1,4 +1,4 @@
-package org.uranus.util.time;
+package org.uranus.utils.time;
 
 public class TimeSpec
 {

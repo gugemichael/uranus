@@ -1,4 +1,4 @@
-package org.uranus.util.buffer;
+package org.uranus.utils.buffer;
 
 public interface SlideWindowBuffer
 {

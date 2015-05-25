@@ -1,4 +1,4 @@
-package org.uranus.util.config;
+package org.uranus.utils.config;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -1,4 +1,4 @@
-package org.uranus.util.buffer;
+package org.uranus.utils.buffer;
 
 import java.util.LinkedList;
 import java.util.Queue;

@@ -1,6 +1,6 @@
-package org.uranus.util.buffer;
+package org.uranus.utils.buffer;
 
-import org.uranus.util.time.TimeSpec;
+import org.uranus.utils.time.TimeSpec;
 
 public abstract class TimerBuffer
 {

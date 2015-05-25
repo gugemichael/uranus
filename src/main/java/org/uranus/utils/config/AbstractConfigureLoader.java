@@ -1,4 +1,4 @@
-package org.uranus.util.config;
+package org.uranus.utils.config;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -62,7 +62,7 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 					else if (option == ConfigureOptional.ABORT)
 						return false;
 					else if (option == ConfigureOptional.EXCEPTION)
-						throw new IllegalAccessException(x.getName());
+						throw new IllegalAccessException(String.format("not found %s, %s", x.getAnnotation(ConfigureKey.class).value(), x.getName()));
 				}
 			} else 
 				continue;
@@ -128,7 +128,7 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 				if (line == null)
 					break;
 				else
-					buffer.append(line);
+					buffer.append(line.trim());
 					buffer.append("\n");
 			}
 			return parse(c, buffer.toString());

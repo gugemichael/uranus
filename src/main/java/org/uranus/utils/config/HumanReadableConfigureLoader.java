@@ -1,4 +1,4 @@
-package org.uranus.util.config;
+package org.uranus.utils.config;
 
 import java.util.HashMap;
 import java.util.Map;

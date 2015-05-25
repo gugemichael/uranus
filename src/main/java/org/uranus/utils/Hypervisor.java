@@ -1,4 +1,4 @@
-package org.uranus.util;
+package org.uranus.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

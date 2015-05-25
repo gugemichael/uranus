@@ -1,4 +1,4 @@
-package org.uranus.util.config;
+package org.uranus.utils.config;
 
 import java.io.File;
 import java.io.IOException;
