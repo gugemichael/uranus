@@ -1,4 +1,4 @@
-package org.uranus.io.filesystem.stream;
+package org.uranus.fs;
 
 import java.io.BufferedReader;
 
