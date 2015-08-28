@@ -1,4 +1,4 @@
-package org.uranus.processors;
+package org.uranus.thread;
 
 public enum HypervisorPolicy
 {

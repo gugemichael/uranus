@@ -1,8 +1,14 @@
 package org.uranus.utils.time;
 
-public class TimeSpec
-{
-	public static long unixtimeStamp() {
-		return System.currentTimeMillis() / 1000L;
-	}
+public interface TimeSpec {
+	
+	public long timestamp();
+
+	public TimeSpec UNIX = new TimeSpec() {
+
+		@Override
+		public long timestamp() {
+			return System.currentTimeMillis() / 1000L;
+		}
+	};
 }

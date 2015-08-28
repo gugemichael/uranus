@@ -8,7 +8,7 @@ public abstract class TimerBuffer
 	/**
 	 * Current time in unixtimestamp
 	 */
-	protected long time = TimeSpec.unixtimeStamp();
+	protected long time = TimeSpec.UNIX.timestamp();
 	
 	/**
 	 * Current buffer size
