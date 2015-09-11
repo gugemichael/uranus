@@ -115,7 +115,7 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 						else if (type == long.class)
 							field.setLong(null, number);
 					} catch (NumberFormatException e) {
-						throw new UnknownFormatConversionException(field.getName());
+						throw new UnknownFormatConversionException(key);
 					}
 
 				} else if (type == boolean.class) {				/* boolean */
@@ -133,7 +133,7 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 						else if (type == double.class)
 							field.setDouble(null, Double.parseDouble(value));
 					} catch(NumberFormatException e) {
-						throw new UnknownFormatConversionException(field.getName());
+						throw new UnknownFormatConversionException(key);
 					}
 
 				} else if (type == String.class)							/* string */
@@ -154,10 +154,10 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 					}
 					// enum not matched
 					if (field.get(null) == null)
-						throw new UnknownFormatConversionException(field.getName());
+						throw new UnknownFormatConversionException(key);
 
 				} else
-					throw new UnknownFormatConversionException(field.getName());
+					throw new UnknownFormatConversionException(key);
 
 				match++;
 			}
