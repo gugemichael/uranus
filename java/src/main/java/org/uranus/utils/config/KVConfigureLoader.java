@@ -2,15 +2,21 @@ package org.uranus.utils.config;
 
 import java.util.UnknownFormatConversionException;
 
+/**
+ * Normal value parse-able configure loader 
+ * 
+ * @author Michael
+ *
+ */
 public class KVConfigureLoader extends AbstractConfigureLoader
 {
 	public KVConfigureLoader(ConfigureOptional option) {
 		super(option);
 	}
 	
-	
 	/**
 	 *	support "true","false" defaultly 
+	 *
 	 */
 	@Override
 	protected boolean readBoolean(String v) throws UnknownFormatConversionException {

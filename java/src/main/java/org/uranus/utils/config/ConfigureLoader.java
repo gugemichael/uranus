@@ -6,16 +6,14 @@ import java.util.UnknownFormatConversionException;
 
 /**
  * 
- * Parse properties kv paire configure !
+ * Load and parse property file key-value pair configure !
  * 
- * E must has the same PUBLIC & STATIC class
- * member for save them , wrong type class
- * member will be ignore
+ * Conf holder class supplied must specified the PUBLIC & STATIC 
+ * injected member filed annotation with ConfigureKey {@link ConfigureKey}
  * 
- * we support :
+ * Supported key type as follows :
  * 		
- * 		String / boolean / long / double / Enum
- * 
+ * string, boolean, int, long, double, Enum
  * 
  * @author Michael
  *
@@ -23,14 +21,16 @@ import java.util.UnknownFormatConversionException;
 public interface ConfigureLoader
 {
 	/**
-	 * parse java properties style liked conf string
+	 * Parse properties style (key=value liked) conf from String
+	 * 
 	 * @throws IOException 
 	 * @throws IllegalAccessException 
 	 */
 	public boolean parse(Class<?> c, String conf) throws UnknownFormatConversionException, IOException, IllegalAccessException;
 	
 	/**
-	 * parse java properties style liked conf from file
+	 * Parse properties style (key=value liked) conf from File class
+	 * 
 	 */
 	public boolean parse(Class<?> c, File conf) throws UnknownFormatConversionException, IOException, IllegalAccessException;
 
