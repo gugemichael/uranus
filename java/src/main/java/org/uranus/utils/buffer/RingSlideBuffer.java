@@ -1,6 +1,6 @@
 package org.uranus.utils.buffer;
 
-public class RingSlideWindowBuffer implements SlideWindowBuffer
+public class RingSlideBuffer implements SlideBuffer
 {
 	private static final int MAX = 512 * 1024;
 	
@@ -8,7 +8,7 @@ public class RingSlideWindowBuffer implements SlideWindowBuffer
 	private int cursor = 0;
 	private char[] buffer = new char[MAX+1]; 
 	
-	public RingSlideWindowBuffer() {
+	public RingSlideBuffer() {
 		
 	}
 	
@@ -48,6 +48,11 @@ public class RingSlideWindowBuffer implements SlideWindowBuffer
 			cursor = len - (MAX - cursor) + 1;
 		}
 		size += len;
+	}
+
+	@Override
+	public long length() {
+		return 0;
 	}
 
 	@Override

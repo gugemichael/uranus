@@ -1,4 +1,4 @@
-package org.uranus.thread;
+package org.uranus.processor;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -13,6 +13,10 @@ public abstract class ThreadsGroup
 	 */
 	private final transient Thread[] threads;
 	
+	public ThreadsGroup(int count) {
+		this(count, ThreadsGroup.class.getSimpleName());
+	}
+	
 	public ThreadsGroup(int count, String name) {
 		threads = new Thread[count];
 		AtomicInteger index = new AtomicInteger(0);
@@ -22,14 +26,14 @@ public abstract class ThreadsGroup
 				public void run() {
 					ThreadsGroup.this.run(id);
 				}
-			}, name + "-" + id);
+			}, String.format("%s-%d",name, id));
 		}
 	}
 	
 	/**
 	 * User defined run
 	 */
-	protected abstract void run(int threadID);
+	protected abstract void run(int id);
 	
 	public ThreadsGroup setDeamon(boolean deamon) {
 		for (Thread t : threads)

@@ -1,34 +1,25 @@
-package org.uranus.thread;
+package org.uranus.processor;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class Hypervisor
-{
+public abstract class Hypervisor {
+	
 	private static final int DEFAULT_IDLE_TIME = 3000;
-
-	/**
-	 * Thread AutoIncrement ID
-	 */
-	private static AtomicInteger id = new AtomicInteger();
 
 	/**
 	 * daemon thread , block or not
 	 */
 	private boolean background = false;
-	
+
 	/**
 	 * Time slice waiting on sub-running crash or stop
 	 */
 	private int suspend = DEFAULT_IDLE_TIME;
-	
+
 	/**
-	 * represent current thread, if background is true 
+	 * represent current thread, if background is true
 	 */
 	private Thread current;
 
-	private HypervisorPolicy policy = HypervisorPolicy.RUN_LOOP;
-	
-	
 	public Hypervisor() {
 	}
 
@@ -36,35 +27,25 @@ public abstract class Hypervisor
 		this.background = true;
 		return this;
 	}
-	
+
 	public Hypervisor suspendTime(int suspend) {
 		this.suspend = suspend;
-		return this;
-	}
-	
-	public Hypervisor policy(HypervisorPolicy policy) {
-		this.policy = policy;
 		return this;
 	}
 
 	public boolean isBackground() {
 		return background;
 	}
-	
+
 	public int getSuspendTime() {
 		return suspend;
 	}
-	
-	public HypervisorPolicy getPolicy() {
-		return policy;
-	}
-	
-	
+
 	/**
 	 * start running
 	 */
 	public void startup() {
-		if (!background) 
+		if (!background)
 			loop();
 		else {
 			current = new Thread(new Runnable() {
@@ -72,12 +53,12 @@ public abstract class Hypervisor
 				public void run() {
 					loop();
 				}
-			}, "Hypervisor-Thread-" + id.getAndIncrement());
+			}, Hypervisor.class.getSimpleName());
 			current.setDaemon(background ? false : true);
 			current.start();
 		}
 	}
-	
+
 	/**
 	 * wait until thread has exited
 	 * 
@@ -88,26 +69,20 @@ public abstract class Hypervisor
 			current.join();
 	}
 
-	
-	
-	
-	
 	private void loop() {
 
 		prepare();
 
-		// keep running 
+		// keep running
 		while (true) {
 			try {
 				while (true) {
 					runningGuard();
 					Thread.sleep(suspend);
 				}
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				onException(ex);
 			} finally {
-				if (policy == HypervisorPolicy.RUN_ONCE)
-					break;
 				try {
 					Thread.sleep(suspend);
 				} catch (InterruptedException e) {
@@ -116,24 +91,24 @@ public abstract class Hypervisor
 			}
 		}
 	}
-	
-	/**
-	 * Do initial job before running 
-	 */
-	protected void prepare() { }
 
 	/**
-	 * Pass exception  
+	 * Do initial job before running
 	 */
-	protected void onException(Exception ex) { } 
+	protected void prepare() {
+		
+	}
+
+	/**
+	 * Pass exception
+	 */
+	protected void onException(Throwable ex) {
+		
+	}
 
 	/**
 	 * Actual working here !
 	 */
 	protected abstract void runningGuard() throws Exception;
-
-
-	
-
 
 }

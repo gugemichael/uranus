@@ -31,9 +31,9 @@ public abstract class TimerBuffer
 	}
 	
 	public boolean strike() {
-		return ( - time > maxTime && size!=0) || size >= maxSize;
+		return (TimeSpec.UNIX.timestamp() - time > maxTime && size!=0) || size >= maxSize;
 	}
 	
-	abstract protected void updateSize(); 
+	abstract protected void updateSize(long size);
 
 }

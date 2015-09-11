@@ -1,5 +1,6 @@
 package org.uranus.utils.buffer;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -8,12 +9,12 @@ import java.util.Queue;
  * Not Thread Safe !
  *
  */
-public class LinkQueueSlideWindowBuffer implements SlideWindowBuffer
+public class CyclicBlockBuffer implements SlideBuffer
 {
 	/**
 	 * Max blocks for each SlideWindowBuffer
 	 */
-	public int max_blocks = 32;
+	public int maxBlocks = 32;
 
 	private Block lastWriteBlock;
 	private Queue<Block> blockList = new LinkedList<Block>();
@@ -25,18 +26,21 @@ public class LinkQueueSlideWindowBuffer implements SlideWindowBuffer
 		private static final int BLOCK_SIZE = 16 * 1024;
 		public StringBuilder block = new StringBuilder(BLOCK_SIZE);
 		public boolean isFull = false;
+		public long length() {
+			return block.length();
+		}
 		public void clear() {
 			block.setLength(0);
 			isFull = false;
 		}
 	}
 	
-	public LinkQueueSlideWindowBuffer(int max_blocks) {
-		this.max_blocks = max_blocks;
+	public CyclicBlockBuffer(int max_blocks) {
+		this.maxBlocks = max_blocks;
 		addNewBlock();
 	}
 	
-	public LinkQueueSlideWindowBuffer() {
+	public CyclicBlockBuffer() {
 		addNewBlock();
 	}
 	
@@ -84,6 +88,15 @@ public class LinkQueueSlideWindowBuffer implements SlideWindowBuffer
 	public boolean isEmpty() {
 		return blockList.peek().block.length() == 0;
 	}
+	
+	@Override
+	public long length() {
+		Iterator<Block> iterator = blockList.iterator();
+		long length = 0;
+		while(iterator.hasNext()) 
+			length += iterator.next().length();
+		return length;
+	}
 
 	@Override
 	public void clear() {
@@ -94,7 +107,7 @@ public class LinkQueueSlideWindowBuffer implements SlideWindowBuffer
 	
 	private void addNewBlock() {
 		// evict (pop) and reuse
-		if (blockList.size() >= max_blocks) {
+		if (blockList.size() >= maxBlocks) {
 			lastWriteBlock = blockList.poll();
 			lastWriteBlock.clear();
 		} else 

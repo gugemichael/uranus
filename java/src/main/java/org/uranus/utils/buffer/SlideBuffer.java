@@ -1,6 +1,6 @@
 package org.uranus.utils.buffer;
 
-public interface SlideWindowBuffer
+public interface SlideBuffer
 {
 	public int MAX_APPEND = 32 * 1024;
 	
@@ -22,6 +22,11 @@ public interface SlideWindowBuffer
 	 * True if the buffer has no elements
 	 */
 	public boolean isEmpty();
+	
+	/**
+	 * content length
+	 */
+	public long length();
 	
 	/**
 	 * Remove all elements
