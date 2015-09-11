@@ -4,13 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.Set;
 import java.util.UnknownFormatConversionException;
 
@@ -35,6 +34,8 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 	 * 
 	 */
 	private final ConfigureOptional policy;
+
+	private ConfigureParser PARSER = ConfigureParser.STANDARD_PARSER;
 	
 	public AbstractConfigureLoader() {
 		this.policy = ConfigureOptional.DISCARD;
@@ -42,6 +43,12 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 	
 	public AbstractConfigureLoader(ConfigureOptional policy) {
 		this.policy = policy;
+	}
+	
+	public AbstractConfigureLoader setConfigureParser(ConfigureParser parser) {
+		if (parser != null)
+			this.PARSER = parser;
+		return this;
 	}
 
 	/**
@@ -60,9 +67,8 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 			return false;
 		
 		// read properties
-		Properties prop = new Properties();
-		prop.load(new StringReader(conf));
-		int count = prop.size(), match = 0;
+		Map<String, String> kv = PARSER.parse(conf);
+		int count = kv.size(), match = 0;
 		
 		String value = null;
 		
@@ -85,7 +91,7 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader
 			if ((key = field.getAnnotation(ConfigureKey.class).value()) == null)
 				continue;
 
-			value = prop.getProperty(key);
+			value = kv.get(key);
 			
 			if (value == null) {
 				switch (policy) {
