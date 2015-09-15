@@ -97,16 +97,20 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 			value = kv.get(key);
 
 			if (value == null) {
-				switch (policy) {
-					case ABORT:
-						return false;
-					case DISCARD:
-						continue;
-					case EXCEPTION:
-						throw new IllegalAccessException(String.format("config key not found %s, %s", key,
-								field.getName()));
-					default:
-						break;
+				// skip nullable
+				if (field.getAnnotation(Nullable.class) != null)
+					continue;
+				else {
+					switch (policy) {
+						case ABORT:
+							return false;
+						case DISCARD:
+							continue;
+						case EXCEPTION:
+							throw new IllegalAccessException(String.format("config key not found %s, %s", key, field.getName()));
+						default:
+							break;
+					}
 				}
 			}
 
