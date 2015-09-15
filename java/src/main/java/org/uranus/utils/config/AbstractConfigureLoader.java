@@ -83,10 +83,15 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 			if ((field.getModifiers() & Modifier.STATIC) == 0 || (field.getModifiers() & Modifier.PUBLIC) == 0)
 				continue;
 
+			ConfigureKey annotation = null;
 			String key = null;
+			
+			// only parse field which has annotation 
+			if ((annotation = field.getAnnotation(ConfigureKey.class)) == null)
+				continue;
 
 			// only concerned with {@Link ConfigureKey}
-			if ((key = field.getAnnotation(ConfigureKey.class).value()) == null)
+			if ((key = annotation.value()) == null)
 				continue;
 
 			value = kv.get(key);
