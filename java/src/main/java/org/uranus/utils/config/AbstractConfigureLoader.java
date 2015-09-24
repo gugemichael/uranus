@@ -25,11 +25,15 @@ import java.util.UnknownFormatConversionException;
  * 
  */
 public abstract class AbstractConfigureLoader implements ConfigureLoader {
+	
 	/*
 	 * Operation on unknown type occurred or parse value failed
 	 */
 	private final ConfigureOptional policy;
 
+	/**
+	 * key value string parser
+	 */
 	private ConfigureParser PARSER = ConfigureParser.STANDARD_PARSER;
 
 	public AbstractConfigureLoader() {
@@ -49,10 +53,8 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 	/**
 	 * parse properties to class's static member field
 	 * 
-	 * @param clazz
-	 *            target class to be injected
-	 * @param conf
-	 *            config string conent
+	 * @param clazz, target class to be injected
+	 * @param conf, config string conent
 	 * 
 	 * @return true if success
 	 * 
@@ -86,11 +88,11 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 			ConfigureKey annotation = null;
 			String key = null;
 			
-			// only parse field which has annotation 
+			// only parse field which has annotation {@Link ConfigureKey}
 			if ((annotation = field.getAnnotation(ConfigureKey.class)) == null)
 				continue;
 
-			// only concerned with {@Link ConfigureKey}
+			// only concerned with non empty "key" string
 			if ((key = annotation.value()) == null)
 				continue;
 
@@ -98,9 +100,11 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 
 			if (value == null) {
 				// skip nullable
-				if (field.getAnnotation(Nullable.class) != null)
+				if (field.getAnnotation(ConfigureNullable.class) != null) {
+					// got one
+					match++;
 					continue;
-				else {
+				} else {
 					switch (policy) {
 						case ABORT:
 							return false;
@@ -120,7 +124,7 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 			Class<?> type = field.getType();
 
 			// match class type
-			if (type == int.class || type == short.class || type == long.class) { /* number */
+			if (type == int.class || type == short.class || type == long.class) { 		/* number */
 				try {
 					long number = readNumber(value);
 					if (type == int.class)
@@ -141,7 +145,7 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 					throw e;
 				}
 
-			} else if (type == float.class || type == double.class) { /* float */
+			} else if (type == float.class || type == double.class) { 			/* float */
 				try {
 					if (type == float.class)
 						field.setFloat(null, Float.parseFloat(value));
@@ -151,16 +155,16 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 					throw new UnknownFormatConversionException(key);
 				}
 
-			} else if (type == String.class) /* string */
+			} else if (type == String.class)		/* string */
 				field.set(null, value);
 
-			else if (type == List.class) { /* List */
+			else if (type == List.class) {			/* List */
 				field.set(null, Arrays.asList(value.split(",")));
 
-			} else if (type == Set.class) { /* Set */
+			} else if (type == Set.class) { 		/* Set */
 				field.set(null, new HashSet<String>(Arrays.asList(value.split(","))));
 
-			} else if (type.isEnum()) { /* Enum */
+			} else if (type.isEnum()) { 			/* Enum */
 				for (Object item : type.getEnumConstants()) 
 					if (item.toString().equals(value)) {
 						field.set(null, item);
@@ -217,9 +221,12 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 	}
 
 	/**
-	 * support "true","false" defaultly
+	 * user defined bool parse method , such as "true","false" defaultly
 	 */
 	protected abstract boolean readBoolean(String v) throws UnknownFormatConversionException;
 
+	/**
+	 * user defined number parse method , such as 123456
+	 */
 	protected abstract long readNumber(String v) throws NumberFormatException;
 }

@@ -29,6 +29,7 @@ public interface ConfigureParser {
 				Map<String, String> result = new HashMap<String, String>();
 				Enumeration<Object> iterator = props.keys();
 				String key;
+				// Properties to Map
 				while (iterator.hasMoreElements()) {
 					key = (String) iterator.nextElement();
 					result.put(key, props.getProperty(key));
