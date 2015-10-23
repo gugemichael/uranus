@@ -1,17 +1,20 @@
 package org.uranus.test;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
-import java.util.Scanner;
 
-import org.uranus.writer.DailyRollFileWriter;
-import org.uranus.writer.FileWriter;
-import org.uranus.writer.FileWriter.WriteMode;
+import org.uranus.io.writer.DailyRollFileWriter;
+import org.uranus.io.writer.FileWriter;
+import org.uranus.io.writer.FileWriter.WriteMode;
 
 public class IoWriterTester {
 
-	public static void main(String[] args) throws IOException {
-
+	public static void main(String[] args) throws IOException, InterruptedException {
+		
+		IoWriterTester tester = new IoWriterTester();
 		Random random = new Random();
 
 		StringBuilder sb = new StringBuilder();
@@ -21,31 +24,28 @@ public class IoWriterTester {
 
 		String s = sb.toString();
 		
-		char chars[] = new char[] {'a' , 'b', 'c', 'd', 'e' , 'f' , 'g' ,'h'};
-
-		FileWriter writer = new DailyRollFileWriter(true);
+		FileWriter writer = new DailyRollFileWriter(false);
 		writer.open("/tmp/aaaaaaaaaaaaaaa", WriteMode.TRUNCATE);
-		int sum = 0;
-		Scanner in = new Scanner(System.in);
 		while (true) {
-			int times = Math.abs(random.nextInt() % 32);
-			StringBuilder b = new StringBuilder();
-			String c = String.valueOf(++sum);
-			b.append(c);
+			Map<String, String> map = new HashMap<String, String>();
+			i = Math.abs(random.nextInt() % 16);
+			System.out.println(i);
+			while(i-- > 0) {
+				String tmp = new Date().toString();
+				System.out.println(tmp);
+				tester.aaa(writer, tmp);
+			}
 			
-			int n = Math.abs((random.nextInt() % 32));
-			
-			while(n-- != 0)
-				b.append(chars[Math.abs(random.nextInt() % chars.length)]);
-			
-			writer.writeLine("abcdefghijklmnopqrstuvwxyz | " + b.toString());
-			
-			System.out.println(b.toString());
+			System.out.println("ONE");
 		}
 
 		// writer.close();
 		//
 		// System.out.println("=== IoWriterTester DONE ===");
+	}
+	
+	public void aaa(FileWriter writer, String buffer) {
+			writer.writeLine("abcdefghijklmnopqrstuvwxyz | " + buffer);
 	}
 
 }

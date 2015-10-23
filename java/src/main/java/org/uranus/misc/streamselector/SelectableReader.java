@@ -1,4 +1,4 @@
-package org.uranus.io.filestream;
+package org.uranus.misc.streamselector;
 
 
 public abstract interface SelectableReader

@@ -1,4 +1,4 @@
-package org.uranus.writer;
+package org.uranus.io.writer;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,8 +22,8 @@ public class GenericFileWriter implements FileWriter {
 	/**
 	 * file handler
 	 */
-	private String fileName;
-	private WriteMode mode;
+	private volatile String fileName;
+	private volatile WriteMode mode;
 
 	private String seperator = String.format("%n");
 	
@@ -31,7 +31,7 @@ public class GenericFileWriter implements FileWriter {
 	 * file write handler , dont's use ${FileWriter} bufferd , we flush() right
 	 * now after write()
 	 */
-	private FileOutputStream out;
+	protected volatile FileOutputStream out;
 	
 	private final boolean buffered;
 

@@ -12,4 +12,5 @@ bin
 target
 .settings
 .AppleDouble
+.DS_Store
 /target/

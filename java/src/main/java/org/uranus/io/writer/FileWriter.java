@@ -1,4 +1,4 @@
-package org.uranus.writer;
+package org.uranus.io.writer;
 
 import java.io.IOException;
 
