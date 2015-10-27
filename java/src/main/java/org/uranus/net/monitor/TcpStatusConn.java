@@ -59,9 +59,7 @@ public class TcpStatusConn {
 	}
 
 	public void write(byte[] data) {
-System.out.println(this.sendBuffer.position());
 		this.sendBuffer.put(data);
-System.out.println(this.sendBuffer.position());
 	}
 	
 	@Override

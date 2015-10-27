@@ -11,7 +11,7 @@ public interface TcpStatusProcessor {
 	/**
 	 * Call on accept incoming new client socket
 	 * 
-	 * @param c
+	 * @param client
 	 */
 	public void acceptNewClient(TcpStatusConn client);
 
@@ -29,6 +29,7 @@ public interface TcpStatusProcessor {
 	 */
 	public void destoryClient(TcpStatusConn client);
 
+	
 	/**
 	 * Process without any operation
 	 */
@@ -41,7 +42,6 @@ public interface TcpStatusProcessor {
 
 		@Override
 		public void process(TcpStatusConn c) {
-			c.close();
 		}
 
 		@Override

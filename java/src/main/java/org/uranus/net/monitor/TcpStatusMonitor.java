@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Stats Center , fetch summary internal system info with tcp
@@ -53,8 +54,8 @@ public class TcpStatusMonitor {
 
 		this.port = port;
 
-		// checking this port is available, throws
-		// IOException if already bind
+		// TRY to bind port ! and check if this port
+		// is available, throw IOException if already bind
 		new ServerSocket(port).close();
 
 		new Thread(new Runnable() {
@@ -121,6 +122,9 @@ public class TcpStatusMonitor {
 			clientSocket.register(selector, SelectionKey.OP_READ);
 		}
 		
+		/*
+		 * call close() and no more data write to socket client
+		 */
 		if (client.isClosed() && client.getSendBuffer().position() == 0)
 			shutdownSocket(clientSocket);
 	}
@@ -136,31 +140,33 @@ public class TcpStatusMonitor {
 			serverSocket.bind(new InetSocketAddress("0.0.0.0", port));
 			selector = Selector.open();
 			serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+
+			while (run) {
+				try {
+					while (run) {
+						selector.select();
+						Set<SelectionKey> selectionKeys = selector.selectedKeys();
+						Iterator<SelectionKey> iterator = selectionKeys.iterator();
+						while (iterator.hasNext()) {
+							SelectionKey selectionKey = iterator.next();
+							iterator.remove();
+							try {
+								handle(selectionKey);
+							} catch (Exception ex) {
+
+							}
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				TimeUnit.MILLISECONDS.sleep(3000);
+			}
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return;
-		}
-
-		while (run) {
-			try {
-				while (run) {
-					selector.select();
-					Set<SelectionKey> selectionKeys = selector.selectedKeys();
-					Iterator<SelectionKey> iterator = selectionKeys.iterator();
-					while (iterator.hasNext()) {
-						SelectionKey selectionKey = iterator.next();
-						iterator.remove();
-						try {
-							handle(selectionKey);
-						} catch (Exception ex) {
-
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			yield(3000);
 		}
 	}
 
@@ -182,16 +188,5 @@ public class TcpStatusMonitor {
 		TcpStatusConn c = clients.remove(channel);
 		
 		processor.destoryClient(c);
-	}
-
-	/**
-	 * jvm yield for specified time
-	 * 
-	 */
-	private void yield(int ms) {
-		try {
-			Thread.sleep(ms);
-		} catch (InterruptedException e) {
-		}
 	}
 }
