@@ -1,6 +1,6 @@
 package org.uranus.util.buffer;
 
-import org.uranus.util.time.TimeSpec;
+import org.uranus.lang.Time;
 
 public abstract class TimerBuffer
 {
@@ -8,7 +8,7 @@ public abstract class TimerBuffer
 	/**
 	 * Current time in unixtimestamp
 	 */
-	protected long time = TimeSpec.UNIX.timestamp();
+	protected long time = Time.getUnixStamp();
 	
 	/**
 	 * Current buffer size
@@ -31,7 +31,7 @@ public abstract class TimerBuffer
 	}
 	
 	public boolean strike() {
-		return (TimeSpec.UNIX.timestamp() - time > maxTime && size!=0) || size >= maxSize;
+		return (Time.getUnixStamp() - time > maxTime && size!=0) || size >= maxSize;
 	}
 	
 	abstract protected void updateSize(long size);

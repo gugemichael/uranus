@@ -1,6 +1,6 @@
 package org.uranus.util.buffer;
 
-public interface SlideBuffer extends StringBuffer
+public interface SlideBuffer
 {
 	public int MAX_APPEND = 32 * 1024;
 	
