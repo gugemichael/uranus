@@ -1,5 +1,7 @@
 package org.uranus.net.monitor;
 
+import java.nio.ByteBuffer;
+
 /**
  * express a socket client
  * 
@@ -8,38 +10,18 @@ package org.uranus.net.monitor;
  */
 public class TcpStatusConn {
 
+	// max buffer receive from command
 	static final int BUFFER_SIZE = 128 * 1024;
 
-	/**
-	 * remote address
-	 */
-	private String ip;
-	
-	private int port;
+	// remote address
+	private String ip, port;
+	// exit status
+	private boolean close = false;
+	// socket read write buffer
+	private ByteBuffer recvBuffer = ByteBuffer.allocate(BUFFER_SIZE);
+	private ByteBuffer sendBuffer = ByteBuffer.allocate(BUFFER_SIZE);
 
-	/**
-	 * last command
-	 */
-	private byte[] lastCommand;
-
-	/**
-	 * keep long connection
-	 */
-	private boolean keepalive = false;
-
-	/**
-	 * exit status
-	 */
-	private boolean exit = false;
-
-	/**
-	 * socket read write buffer
-	 */
-	private byte[] data;
-	
-	
-
-	public TcpStatusConn(String ip, int port) {
+	public TcpStatusConn(String ip, String port) {
 		this.ip = ip;
 		this.port = port;
 	}
@@ -52,43 +34,38 @@ public class TcpStatusConn {
 		this.ip = ip;
 	}
 
-	public int getPort() {
+	public String getPort() {
 		return port;
 	}
 
-	public void setPort(int port) {
+	public void setPort(String port) {
 		this.port = port;
 	}
 
-	public byte[] getLastCommand() {
-		return lastCommand;
+	public boolean isClosed() {
+		return close;
 	}
 
-	public void setLastCommand(byte[] lastCommand) {
-		this.lastCommand = lastCommand;
+	public void close() {
+		this.close = true;
 	}
 
-	public boolean isKeepalive() {
-		return keepalive;
+	public ByteBuffer getSendBuffer() {
+		return sendBuffer;
+	}
+	
+	public ByteBuffer getRecvBuffer() {
+		return recvBuffer;
 	}
 
-	public void keepalive() {
-		this.keepalive = true;
+	public void write(byte[] data) {
+System.out.println(this.sendBuffer.position());
+		this.sendBuffer.put(data);
+System.out.println(this.sendBuffer.position());
 	}
-
-	public boolean isExit() {
-		return exit;
-	}
-
-	public void exit() {
-		this.exit = true;
-	}
-
-	public byte[] getData() {
-		return data;
-	}
-
-	public void setData(byte[] data) {
-		this.data = data;
+	
+	@Override
+	public String toString() {
+		return String.format("client %s:%s", ip, port);
 	}
 }

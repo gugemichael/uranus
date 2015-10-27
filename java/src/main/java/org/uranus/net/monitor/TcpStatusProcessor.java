@@ -12,9 +12,8 @@ public interface TcpStatusProcessor {
 	 * Call on accept incoming new client socket
 	 * 
 	 * @param c
-	 * @return policy, FALSE will close socket directly
 	 */
-	public boolean acceptNewClient(TcpStatusConn c);
+	public void acceptNewClient(TcpStatusConn client);
 
 	/**
 	 * Call on incoming packet, write data in ConnClient
@@ -22,26 +21,27 @@ public interface TcpStatusProcessor {
 	 * @param c , current connection context
 	 * @param buffer , read buffer
 	 */
-	public void process(TcpStatusConn c, byte[] buffer);
+	public void process(TcpStatusConn client);
 
 	/**
 	 * Call on close client socket
 	 * 
 	 */
-	public void destoryClient(TcpStatusConn c);
+	public void destoryClient(TcpStatusConn client);
 
 	/**
-	 * Process without ayn operation
+	 * Process without any operation
 	 */
 	public static TcpStatusProcessor NO_OP = new TcpStatusProcessor() {
+		
 		@Override
-		public boolean acceptNewClient(TcpStatusConn c) {
-			return false;
+		public void acceptNewClient(TcpStatusConn c) {
+			c.close();
 		}
 
 		@Override
-		public void process(TcpStatusConn c, byte[] buffer) {
-			c.exit();
+		public void process(TcpStatusConn c) {
+			c.close();
 		}
 
 		@Override

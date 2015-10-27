@@ -3,7 +3,6 @@ package org.uranus.net.monitor;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -19,7 +18,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author Michael xixuan.lx
  *
  */
-public class TcpStatusMonitor implements Runnable {
+public class TcpStatusMonitor {
 
 	/**
 	 * clients map
@@ -58,7 +57,12 @@ public class TcpStatusMonitor implements Runnable {
 		// IOException if already bind
 		new ServerSocket(port).close();
 
-		new Thread(this).start();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				TcpStatusMonitor.this.run();
+			}
+		}).start();
 	}
 
 	/**
@@ -81,43 +85,47 @@ public class TcpStatusMonitor implements Runnable {
 		ServerSocketChannel server = null;
 		SocketChannel clientSocket = null;
 		int count = 0;
+		TcpStatusConn client = null;
 		if (selectionKey.isAcceptable()) {
 			// new conn
 			server = (ServerSocketChannel) selectionKey.channel();
 			clientSocket = server.accept();
 			clientSocket.configureBlocking(false);
 			clientSocket.register(selector, SelectionKey.OP_READ);
-			TcpStatusConn c = new TcpStatusConn(clientSocket.socket().getInetAddress().getHostAddress(), clientSocket.socket().getPort());
-			clients.put(clientSocket, c);
-			processor.acceptNewClient(c);
+			client = new TcpStatusConn(clientSocket.socket().getInetAddress().getHostAddress(), Integer.toString(clientSocket.socket().getPort()));
+			clients.put(clientSocket, client);
+			processor.acceptNewClient(client);
 		} else if (selectionKey.isReadable()) {
 			// read
 			clientSocket = (SocketChannel) selectionKey.channel();
-			TcpStatusConn conn = clients.get(clientSocket);
-			if (conn != null) {
-				ByteBuffer buffer = ByteBuffer.allocate(TcpStatusConn.BUFFER_SIZE);
-				while ((count = clientSocket.read(buffer)) > 0)
+			client = clients.get(clientSocket);
+			if (client != null) {
+				client.getRecvBuffer().clear();
+				while ((count = clientSocket.read(client.getRecvBuffer())) > 0)
 					;
 				if (count >= 0) {
-					processor.process(conn, buffer.array());
+				client.getRecvBuffer().flip();
+				processor.process(client);
 					clientSocket.register(selector, SelectionKey.OP_WRITE);
 				} else
 					shutdownSocket(clientSocket);
 			}
 		} else if (selectionKey.isWritable()) {
+			// write
 			clientSocket = (SocketChannel) selectionKey.channel();
-			TcpStatusConn c = clients.get(clientSocket);
-			clientSocket.write(ByteBuffer.wrap(c.getData()));
-			// for short connection
-			if (c.isExit() || !c.isKeepalive())
-				shutdownSocket(clientSocket);
-			else
-				clientSocket.register(selector, SelectionKey.OP_READ);
+			client = clients.get(clientSocket);
+			client.getSendBuffer().flip();
+			while(clientSocket.write(client.getSendBuffer()) != 0)
+				;
+			client.getSendBuffer().clear();
+			clientSocket.register(selector, SelectionKey.OP_READ);
 		}
+		
+		if (client.isClosed() && client.getSendBuffer().position() == 0)
+			shutdownSocket(clientSocket);
 	}
 
-	@Override
-	public void run() {
+	private void run() {
 
 		try {
 			serverChannel = ServerSocketChannel.open();
@@ -163,9 +171,17 @@ public class TcpStatusMonitor implements Runnable {
 	 *            , client socket
 	 */
 	private void shutdownSocket(SocketChannel channel) throws IOException {
+		
+		// unregister all event
+		if (channel.isRegistered())
+			channel.keyFor(selector).cancel();
+		
 		channel.close();
+		
+		// remove associated Conn client
 		TcpStatusConn c = clients.remove(channel);
-		processor.acceptNewClient(c);
+		
+		processor.destoryClient(c);
 	}
 
 	/**

@@ -10,11 +10,11 @@ import org.uranus.io.writer.DailyRollFileWriter;
 import org.uranus.io.writer.FileWriter;
 import org.uranus.io.writer.FileWriter.WriteMode;
 
-public class IoWriterTester {
+public class IoWriterTest {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
-		IoWriterTester tester = new IoWriterTester();
+		IoWriterTest tester = new IoWriterTest();
 		Random random = new Random();
 
 		StringBuilder sb = new StringBuilder();

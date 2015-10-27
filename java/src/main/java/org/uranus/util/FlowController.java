@@ -39,6 +39,13 @@ public interface FlowController {
 	 * 
 	 * @return
 	 */
+	public boolean control(int number);
+	
+	/**
+	 * entry this flow check point many request
+	 * 
+	 * @return
+	 */
 	public boolean control();
 
 	/**
@@ -58,17 +65,23 @@ class QPSFlowController implements FlowController {
 	 * counter for qps
 	 */
 	private AtomicInteger counter = new AtomicInteger(0);
+	
 	private AtomicLong timestamp = new AtomicLong(0L);
 
 	FlowControllerPolicy policy = FlowControllerPolicy.BLOCK;
 
 	private volatile int MAX;
-
+	
 	@Override
 	public boolean control() {
+		return control(1);
+	}
+
+	@Override
+	public boolean control(int number) {
 		long current = System.currentTimeMillis();
 		if (current <= (timestamp.get() + 1000L)) {
-			if (counter.getAndIncrement() >= MAX) {
+			if (counter.getAndAdd(number) >= MAX) {
 				
 				// new timestamp and clear counter
 				long moment = timestamp.get(); 
@@ -106,4 +119,5 @@ class QPSFlowController implements FlowController {
 		this.policy = policy;
 		return this;
 	}
+
 }
