@@ -2,6 +2,8 @@ package org.uranus.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -32,7 +34,7 @@ public class ClassMemberReflector {
 		}
 
 		public boolean is(int modifier) {
-			return this.modifier  == modifier;
+			return this.modifier == modifier;
 		}
 
 		public int getModifier() {
@@ -88,13 +90,13 @@ public class ClassMemberReflector {
 				classString.append(member.getName().toLowerCase());
 				classString.append(SEPARATOR);
 				if (member.getType() == int.class)
-					classString.append(String.format("%,d",  member.getInt(instance)));
+					classString.append(String.format("%,d", member.getInt(instance)));
 				else if (member.getType() == short.class)
-					classString.append(String.format("%,d",  member.getShort(instance)));
+					classString.append(String.format("%,d", member.getShort(instance)));
 				else if (member.getType() == byte.class)
-					classString.append(String.format("%,d",  member.getByte(instance)));
+					classString.append(String.format("%,d", member.getByte(instance)));
 				else if (member.getType() == long.class)
-					classString.append(String.format("%,d",  member.getLong(instance)));
+					classString.append(String.format("%,d", member.getLong(instance)));
 				else if (member.getType() == long.class)
 					classString.append(member.getBoolean(instance));
 				else if (member.getType() == AtomicLong.class)
@@ -105,6 +107,18 @@ public class ClassMemberReflector {
 					classString.append(((AtomicBoolean) member.get(instance)).get());
 				else if (member.getType() == String.class)
 					classString.append((String) member.get(instance));
+				else if ((member.get(instance)) instanceof Collection) {
+					@SuppressWarnings("unchecked")
+					Collection<Object> list = (Collection<Object>) member.get(instance);
+					Iterator<Object> iter = list.iterator();
+					while (iter.hasNext()) {
+						classString.append(iter.next().toString());
+						if (iter.hasNext())
+							classString.append(",");
+					}
+				} else {
+					classString.append(member.get(instance).toString());
+				}
 				classString.append(Constants.DELIMITER);
 			} catch (Exception e) {
 				return e.getMessage();

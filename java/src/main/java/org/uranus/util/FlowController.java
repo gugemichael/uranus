@@ -70,7 +70,7 @@ class QPSFlowController implements FlowController {
 
 	FlowControllerPolicy policy = FlowControllerPolicy.BLOCK;
 
-	private volatile int MAX;
+	private volatile int MAX = 0;
 	
 	@Override
 	public boolean control() {
@@ -79,6 +79,10 @@ class QPSFlowController implements FlowController {
 
 	@Override
 	public boolean control(int number) {
+		
+		if (MAX <= 0)
+			return true;
+		
 		long current = System.currentTimeMillis();
 		if (current <= (timestamp.get() + 1000L)) {
 			if (counter.getAndAdd(number) >= MAX) {

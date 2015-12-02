@@ -1,8 +1,11 @@
-package org.uranus.util.config;
+package org.uranus.configuration.loader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UnknownFormatConversionException;
+import java.util.Map;
+
+import org.uranus.configuration.ConfigLoadException;
+import org.uranus.configuration.ConfigureKey;
 
 /**
  * 
@@ -21,18 +24,26 @@ import java.util.UnknownFormatConversionException;
 public interface ConfigureLoader
 {
 	/**
+	 * Parse properties style (key=value liked) conf from Map
+	 *
+	 * @throws IOException
+	 * @throws ConfigLoadException
+	 */
+	public void parse(Class<?> c, Map<String, String> kv) throws ConfigLoadException;
+
+	/**
 	 * Parse properties style (key=value liked) conf from String
 	 * 
 	 * @throws IOException 
-	 * @throws IllegalAccessException 
+	 * @throws ConfigLoadException 
 	 */
-	public boolean parse(Class<?> c, String conf) throws UnknownFormatConversionException, IOException, IllegalAccessException;
+	public void parse(Class<?> c, String conf) throws ConfigLoadException;
 	
 	/**
 	 * Parse properties style (key=value liked) conf from File class
 	 * 
 	 */
-	public boolean parse(Class<?> c, File conf) throws UnknownFormatConversionException, IOException, IllegalAccessException;
+	public void parse(Class<?> c, File conf) throws ConfigLoadException, IOException;
 
 }
 
