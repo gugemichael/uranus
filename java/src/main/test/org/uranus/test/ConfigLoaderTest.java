@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.UnknownFormatConversionException;
 
-import org.uranus.configuration.ConfigureKey;
-import org.uranus.configuration.loader.HumanReadableConfigureLoader;
-import org.uranus.configuration.loader.KVConfigureLoader;
-import org.uranus.configuration.loader.UserDefinedConfigureLoader;
 import org.uranus.util.ClassMemberReflector;
+
+import com.uranus.lang.configuration.ConfigureKey;
+import com.uranus.lang.configuration.loader.HumanReadableConfigureLoader;
+import com.uranus.lang.configuration.loader.KVConfigureLoader;
+import com.uranus.lang.configuration.loader.UserDefinedConfigureLoader;
 
 public class ConfigLoaderTest {
 

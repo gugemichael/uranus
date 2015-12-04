@@ -1,4 +1,4 @@
-package org.uranus.net.monitor;
+package org.uranus.net.reportor;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,18 +14,18 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Stats Center , fetch summary internal system info with tcp
+ * Tcp network reportor , fetch summary internal system info from tcp conn
  * 
  * @author Michael xixuan.lx
  *
  */
-public class TcpStatusMonitor {
+public class NetReportor {
 
 	/**
 	 * clients map
 	 * 
 	 */
-	private static ConcurrentMap<SocketChannel, TcpStatusConn> clients = new ConcurrentHashMap<SocketChannel, TcpStatusConn>();
+	private static ConcurrentMap<SocketChannel, NetReportorConn> clients = new ConcurrentHashMap<SocketChannel, NetReportorConn>();
 
 	/**
 	 * socket handler
@@ -37,14 +37,14 @@ public class TcpStatusMonitor {
 	private ServerSocketChannel serverChannel;
 	private Selector selector;
 
-	private TcpStatusProcessor processor = TcpStatusProcessor.NO_OP;
+	private NetReportorProcessor processor = NetReportorProcessor.NO_OP;
 
 	/**
 	 * runnable flag
 	 */
 	private volatile boolean run = true;
 
-	public TcpStatusMonitor setProcessor(TcpStatusProcessor processor) {
+	public NetReportor setProcessor(NetReportorProcessor processor) {
 		if (processor != null)
 			this.processor = processor;
 		return this;
@@ -61,7 +61,7 @@ public class TcpStatusMonitor {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				TcpStatusMonitor.this.run();
+				NetReportor.this.run();
 			}
 		}).start();
 	}
@@ -86,14 +86,14 @@ public class TcpStatusMonitor {
 		ServerSocketChannel server = null;
 		SocketChannel clientSocket = null;
 		int count = 0;
-		TcpStatusConn client = null;
+		NetReportorConn client = null;
 		if (selectionKey.isAcceptable()) {
 			// new conn
 			server = (ServerSocketChannel) selectionKey.channel();
 			clientSocket = server.accept();
 			clientSocket.configureBlocking(false);
 			clientSocket.register(selector, SelectionKey.OP_READ);
-			client = new TcpStatusConn(clientSocket.socket().getInetAddress().getHostAddress(), Integer.toString(clientSocket.socket().getPort()));
+			client = new NetReportorConn(clientSocket.socket().getInetAddress().getHostAddress(), Integer.toString(clientSocket.socket().getPort()));
 			clients.put(clientSocket, client);
 			processor.acceptNewClient(client);
 		} else if (selectionKey.isReadable()) {
@@ -185,7 +185,7 @@ public class TcpStatusMonitor {
 		channel.close();
 		
 		// remove associated Conn client
-		TcpStatusConn c = clients.remove(channel);
+		NetReportorConn c = clients.remove(channel);
 		
 		processor.destoryClient(c);
 	}

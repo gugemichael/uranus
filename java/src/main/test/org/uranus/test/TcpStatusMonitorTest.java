@@ -3,8 +3,8 @@ package org.uranus.test;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.uranus.net.monitor.TcpStatusMonitor;
-import org.uranus.net.monitor.TcpStatusReportProcessor;
+import org.uranus.net.reportor.NetStatusClient;
+import org.uranus.net.reportor.NetReportor;
 
 public class TcpStatusMonitorTest {
 	
@@ -16,8 +16,8 @@ public class TcpStatusMonitorTest {
 
 	public static void main(String[] args) throws IOException {
 
-		TcpStatusMonitor monitor = new TcpStatusMonitor();
-		monitor.setProcessor(new TcpStatusReportProcessor(Counter.class));
+		NetReportor monitor = new NetReportor();
+		monitor.setProcessor(new NetStatusClient(Counter.class));
 //		monitor.setProcessor(new TcpStatusProcessor() {
 //			@Override
 //			public void process(TcpStatusConn c) {

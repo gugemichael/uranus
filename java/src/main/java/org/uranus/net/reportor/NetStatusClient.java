@@ -1,8 +1,8 @@
-package org.uranus.net.monitor;
+package org.uranus.net.reportor;
 
 import org.uranus.util.ClassMemberReflector;
 
-public class TcpStatusReportProcessor implements TcpStatusProcessor {
+public class NetStatusClient implements NetReportorProcessor {
 
 	private enum COMMAND {
 		STATS, PING, PONG, HELP
@@ -16,17 +16,17 @@ public class TcpStatusReportProcessor implements TcpStatusProcessor {
 	// class static member reflector
 	private final ClassMemberReflector reflector = new ClassMemberReflector();
 
-	public TcpStatusReportProcessor(Class<?> target) {
+	public NetStatusClient(Class<?> target) {
 		this.target = target;
 	}
 
 	@Override
-	public void acceptNewClient(TcpStatusConn client) {
+	public void acceptNewClient(NetReportorConn client) {
 
 	}
 
 	@Override
-	public void destoryClient(TcpStatusConn client) {
+	public void destoryClient(NetReportorConn client) {
 
 	}
 
@@ -49,7 +49,7 @@ public class TcpStatusReportProcessor implements TcpStatusProcessor {
 	}
 
 	@Override
-	public void process(TcpStatusConn client) {
+	public void process(NetReportorConn client) {
 
 		String command = new String(client.getRecvBuffer().array(), 0, client.getRecvBuffer().limit()).trim();
 

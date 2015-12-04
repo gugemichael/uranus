@@ -1,4 +1,4 @@
-package org.uranus.lang;
+package org.uranus.lang.constans;
 
 public class Constants {
 

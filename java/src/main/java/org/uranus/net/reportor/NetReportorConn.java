@@ -1,14 +1,14 @@
-package org.uranus.net.monitor;
+package org.uranus.net.reportor;
 
 import java.nio.ByteBuffer;
 
 /**
- * express a socket client
+ * Socket connection client
  * 
  * @author Michael xixuan.lx
  *
  */
-public class TcpStatusConn {
+public class NetReportorConn {
 
 	// max buffer receive from command
 	static final int BUFFER_SIZE = 128 * 1024;
@@ -21,7 +21,7 @@ public class TcpStatusConn {
 	private ByteBuffer recvBuffer = ByteBuffer.allocate(BUFFER_SIZE);
 	private ByteBuffer sendBuffer = ByteBuffer.allocate(BUFFER_SIZE);
 
-	public TcpStatusConn(String ip, String port) {
+	public NetReportorConn(String ip, String port) {
 		this.ip = ip;
 		this.port = port;
 	}
