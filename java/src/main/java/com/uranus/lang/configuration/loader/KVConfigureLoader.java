@@ -1,13 +1,13 @@
-package org.uranus.configuration.loader;
+package com.uranus.lang.configuration.loader;
 
 import java.util.UnknownFormatConversionException;
 
-import org.uranus.configuration.ConfigureOption;
+import com.uranus.lang.configuration.ConfigureOption;
 
 /**
  * Normal value parse-able configure loader 
  * 
- * @author Michael
+ * @author Michael xixuan.lx
  *
  */
 public class KVConfigureLoader extends AbstractConfigureLoader

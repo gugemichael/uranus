@@ -1,13 +1,19 @@
-package org.uranus.configuration;
+package com.uranus.lang.configuration;
 
 /**
- * Operate method definition
+ * Operate definition
  * 
- * @author Michael
+ * @author Michael xixuan.lx
  *
  */
 public class ConfigureOption {
 	
+	/**
+	 * policy on parsing 
+	 * 
+	 * @author Michael xixuan.lx
+	 *
+	 */
 	public static enum ConfigureParsePolicy {
 		/* DISCARD, ABORT, */ EXCEPTION
 	}

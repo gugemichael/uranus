@@ -1,11 +1,17 @@
-package org.uranus.configuration.loader;
+package com.uranus.lang.configuration.loader;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UnknownFormatConversionException;
 
-import org.uranus.configuration.ConfigureOption;
+import com.uranus.lang.configuration.ConfigureOption;
 
+/**
+ * Config expressed in human reading format loader 
+ * 
+ * @author Michael xixuan.lx
+ *
+ */
 public class HumanReadableConfigureLoader extends AbstractConfigureLoader
 {
 	public static long RADIX = 1024L;

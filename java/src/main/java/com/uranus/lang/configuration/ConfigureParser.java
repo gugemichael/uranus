@@ -1,4 +1,4 @@
-package org.uranus.configuration;
+package com.uranus.lang.configuration;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -7,6 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Variaty of config string parse into Map key 
+ * value. only {@link parse} implement
+ * 
+ * @author Michael xixuan.lx
+ *
+ */
 public interface ConfigureParser {
 
 	/**

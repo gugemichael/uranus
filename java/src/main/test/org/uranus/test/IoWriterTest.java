@@ -2,8 +2,6 @@ package org.uranus.test;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import org.uranus.io.writer.DailyRollFileWriter;
@@ -13,7 +11,7 @@ import org.uranus.io.writer.FileWriter.WriteMode;
 public class IoWriterTest {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		
+
 		IoWriterTest tester = new IoWriterTest();
 		Random random = new Random();
 
@@ -22,20 +20,17 @@ public class IoWriterTest {
 		while (i-- != 0)
 			sb.append("c");
 
-		String s = sb.toString();
-		
 		FileWriter writer = new DailyRollFileWriter(false);
 		writer.open("/tmp/aaaaaaaaaaaaaaa", WriteMode.TRUNCATE);
 		while (true) {
-			Map<String, String> map = new HashMap<String, String>();
 			i = Math.abs(random.nextInt() % 16);
 			System.out.println(i);
-			while(i-- > 0) {
+			while (i-- > 0) {
 				String tmp = new Date().toString();
 				System.out.println(tmp);
 				tester.aaa(writer, tmp);
 			}
-			
+
 			System.out.println("ONE");
 		}
 
@@ -43,9 +38,9 @@ public class IoWriterTest {
 		//
 		// System.out.println("=== IoWriterTester DONE ===");
 	}
-	
+
 	public void aaa(FileWriter writer, String buffer) {
-			writer.writeLine("abcdefghijklmnopqrstuvwxyz | " + buffer);
+		writer.writeLine("abcdefghijklmnopqrstuvwxyz | " + buffer);
 	}
 
 }

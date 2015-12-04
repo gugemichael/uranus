@@ -2,27 +2,48 @@ package org.uranus.io.writer;
 
 import java.io.IOException;
 
+public interface FileWriter {
 
-public interface FileWriter extends Writer{
-	
 	enum WriteMode {
 		APPEND, TRUNCATE
 	}
-	
+
 	/**
-	 * open file with full path name and mode
+	 * write content
 	 * 
-	 * @param fileName, full path name
-	 * @param mode, {@link WriteMode} 
-	 * 
-	 * @return true if open success
+	 * @param content
 	 */
-	public boolean open(String fileName, WriteMode mode) throws IOException;
-	
+	public void write(byte content[], int offset, int count);
+
 	/**
 	 * write with content string type
 	 * 
 	 * @param content
 	 */
 	public void writeLine(String content);
+
+	/**
+	 * write something to underlay resource
+	 * 
+	 * @param content
+	 */
+	public void flush();
+
+	/**
+	 * close the writer
+	 */
+	public void close();
+
+	/**
+	 * open file with full path name and mode
+	 * 
+	 * @param fileName,
+	 *            full path name
+	 * @param mode,
+	 *            {@link WriteMode}
+	 * 
+	 * @return true if open success
+	 */
+	public boolean open(String fileName, WriteMode mode) throws IOException;
+
 }

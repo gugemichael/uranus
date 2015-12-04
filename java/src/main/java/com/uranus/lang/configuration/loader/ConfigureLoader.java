@@ -1,11 +1,11 @@
-package org.uranus.configuration.loader;
+package com.uranus.lang.configuration.loader;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.uranus.configuration.ConfigLoadException;
-import org.uranus.configuration.ConfigureKey;
+import com.uranus.lang.configuration.ConfigLoadException;
+import com.uranus.lang.configuration.ConfigureKey;
 
 /**
  * 
@@ -14,11 +14,7 @@ import org.uranus.configuration.ConfigureKey;
  * Conf holder class supplied must specified the PUBLIC & STATIC 
  * injected member filed annotation with ConfigureKey {@link ConfigureKey}
  * 
- * Supported key type as follows :
- * 		
- * string, boolean, int, long, double, Enum
- * 
- * @author Michael
+ * @author Michael xixuan.lx
  *
  */
 public interface ConfigureLoader

@@ -1,4 +1,4 @@
-package org.uranus.configuration.loader;
+package com.uranus.lang.configuration.loader;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,32 +14,39 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UnknownFormatConversionException;
 
-import org.uranus.configuration.ConfigLoadException;
-import org.uranus.configuration.ConfigureKey;
-import org.uranus.configuration.ConfigureOption;
-import org.uranus.configuration.ConfigureParser;
-import org.uranus.configuration.GenericStruct;
-import org.uranus.configuration.ConfigLoadException.ExceptionCode;
-import org.uranus.configuration.ConfigureOption.ConfigureParsePolicy;
+import com.uranus.lang.configuration.ConfigLoadException;
+import com.uranus.lang.configuration.ConfigureKey;
+import com.uranus.lang.configuration.ConfigureOption;
+import com.uranus.lang.configuration.ConfigureParser;
+import com.uranus.lang.configuration.GenericStruct;
+import com.uranus.lang.configuration.ConfigLoadException.ExceptionCode;
+import com.uranus.lang.configuration.ConfigureOption.ConfigureParsePolicy;
 
 /**
  * 
- * Parse comman key-value pair which can loading with java.util.Properties
- * easily
+ * Common process on config pair with Map, String or File
  * 
- * String = "abs" short/int/long = 1000 float/double = 10.01 boolean =
- * true,false
+ * supplied diffrent {@link ConfigureParser} and {@link ConfigureOption}
+ * implemention class will concrete a few of read* method, read diffrent
+ * type of config key as follows :
  * 
- * @author Michael
+ * 		String, Number, Boolean, Object
+ * 
+ * @author Michael xixuan.lx
  * 
  */
 public abstract class AbstractConfigureLoader implements ConfigureLoader {
 	
-	/*
-	 * Operation on unknown type occurred or parse value failed
+	/**
+	 * operation on unknown type occurred or parse value failed
+	 * 
 	 */
 	private final ConfigureOption option;
 
+	/**
+	 * analytic key with parser's parse() 
+	 * 
+	 */
 	private ConfigureParser PARSER = ConfigureParser.STANDARD_PARSER;
 
 	public AbstractConfigureLoader() {
@@ -60,8 +67,19 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 		return this;
 	}
 	
+	/**
+	 * concrete type key resolv code
+	 * 
+	 * @param member, to be analyzed Class's member field
+	 * @param type, self member field class type 
+	 * @param key, annotated key name
+	 * @param value, value in config string
+	 * 
+	 * @throws IllegalAccessException, inject or access member exception
+	 * @throws ConfigLoadException, parsing exception
+	 */
 	@SuppressWarnings("unchecked")
-	private void resolvMember(Field member, Class<?> type, final String key, final String value) throws IllegalAccessException, ConfigLoadException {
+	private void resolv(Field member, Class<?> type, final String key, final String value) throws IllegalAccessException, ConfigLoadException {
 		
 		if (type == int.class || type == short.class || type == long.class || type == float.class || type == double.class) {			 /* number */
 			Double number = readNumber(key, value);
@@ -127,7 +145,7 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 
 			// enum not matched
 			if (member.get(null) == null)
-				throw new ConfigLoadException(ExceptionCode.CONFIG_KEY_PARSE_FAILED, String.format("enum type %s parse key %s failed", type.getSimpleName(), key));
+				throw new ConfigLoadException(ExceptionCode.VALUE_PARSE_FAILED, String.format("enum type %s parse key %s failed", type.getSimpleName(), key));
 
 		} else {																	/* Object */
 			
@@ -136,14 +154,16 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 	}
 
 	/**
-	 * Parse properties style (key=value liked) conf from Map
+	 * Parse properties under key-value Map
+	 * 
+	 * @param clazz, to be analyzed target Class
+	 * @param kv, key value pairs
 	 *
-	 * @throws IOException
-	 * @throws IllegalAccessException
+	 * @throws ConfigLoadException
 	 */
 	public void parse(Class<?> clazz, Map<String, String> kv) throws ConfigLoadException {
 		if (clazz == null || kv == null || kv.isEmpty())
-			throw new ConfigLoadException(ExceptionCode.CONFIG_ARGUMENT_INVALID, "key value map or clazz is invalid");
+			throw new ConfigLoadException(ExceptionCode.ARGUMENT_INVALID, "key value map or clazz is invalid");
 
 		String value = null;
 
@@ -183,7 +203,7 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 				// TODO : not beautiful !
 				switch (option.getParsePolicy()) {
 					case EXCEPTION:
-						throw new ConfigLoadException(ExceptionCode.CONFIG_KEY_NOT_FOUND, String.format("config key not found %s, %s", annotationKey, field.getName()));
+						throw new ConfigLoadException(ExceptionCode.KEY_NOT_FOUND, String.format("config key not found %s, %s", annotationKey, field.getName()));
 					default:
 						break;
 				}
@@ -195,33 +215,29 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 			Class<?> type = field.getType();
 
 			try {
-				resolvMember(field, type, annotationKey, value);
+				resolv(field, type, annotationKey, value);
 			} catch (NumberFormatException e) {
-				throw new ConfigLoadException(ExceptionCode.CONFIG_KEY_PARSE_FAILED, String.format("convert annotation key %s failed", annotationKey));
+				throw new ConfigLoadException(ExceptionCode.VALUE_PARSE_FAILED, String.format("convert annotation key %s failed", annotationKey));
 			} catch (IllegalArgumentException e) {
-				throw new ConfigLoadException(ExceptionCode.CONFIG_KEY_PARSE_FAILED, String.format("set annotation key %s failed", annotationKey));
+				throw new ConfigLoadException(ExceptionCode.VALUE_PARSE_FAILED, String.format("set annotation key %s failed", annotationKey));
 			} catch (IllegalAccessException e) {
-				throw new ConfigLoadException(ExceptionCode.CONFIG_KEY_ACCESS_INVALID, String.format("access annotation key %s failed", annotationKey));
+				throw new ConfigLoadException(ExceptionCode.KEY_ACCESS_INVALID, String.format("access annotation key %s failed", annotationKey));
 			}
 		}
 	}
 
 	/**
-	 * parse properties to class's static member field
+	 * Parse properties under key-value string
 	 * 
-	 * @param clazz
-	 *            target class to be injected
-	 * @param conf
-	 *            config string conent
-	 * 
-	 * @return true if success
+	 * @param clazz, to be analyzed target Class
+	 * @param conf, key value string
 	 * 
 	 */
 	@Override
 	public void parse(Class<?> clazz, String conf) throws ConfigLoadException {
 
 		if (clazz == null || conf == null || conf.isEmpty())
-			throw new ConfigLoadException(ExceptionCode.CONFIG_ARGUMENT_INVALID, "config string or clazz is invalid");
+			throw new ConfigLoadException(ExceptionCode.ARGUMENT_INVALID, "config string or clazz is invalid");
 
 		// read properties
 		Map<String, String> kv = PARSER.parse(conf);
@@ -230,14 +246,17 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Parse properties under File content string line
+	 * 
+	 * @param clazz, to be analyzed target Class
+	 * @param conf, config file
 	 * 
 	 */
 	@Override
 	public void parse(Class<?> clazz, File conf) throws ConfigLoadException, IOException {
 
 		if (clazz == null || conf == null || !conf.exists() || !conf.canRead())
-			throw new ConfigLoadException(ExceptionCode.CONFIG_ARGUMENT_INVALID, "config file or clazz is invalid");
+			throw new ConfigLoadException(ExceptionCode.ARGUMENT_INVALID, "config file or clazz is invalid");
 
 		char[] buffer = new char[4096];
 		StringBuffer content = new StringBuffer();
@@ -265,13 +284,22 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 	}
 
 	/**
-	 * support "true","false" defaultly
+	 * read boolean value
 	 */
 	protected abstract Boolean readBoolean(String key, String value) throws UnknownFormatConversionException;
 
+	/**
+	 * read numberic value
+	 */
 	protected abstract Double readNumber(String key, String value) throws NumberFormatException;
 	
+	/**
+	 * read plain string 
+	 */
 	protected abstract String readString(String key, String value) throws NumberFormatException;
 	
+	/**
+	 * read serialized or binary class object
+	 */
 	protected abstract Object readObject(String key, String value) throws NumberFormatException;
 }

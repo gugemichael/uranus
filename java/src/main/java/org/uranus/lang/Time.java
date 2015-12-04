@@ -10,5 +10,5 @@ public class Time {
 	public static long getUnixStamp() {
 		return System.currentTimeMillis() / 1000L;
 	};
-	
+
 }

@@ -1,11 +1,27 @@
-package org.uranus.configuration;
+package com.uranus.lang.configuration;
 
+/**
+ * Exception of configure loader
+ * 
+ * There is some useful error cdoe information overwrite 
+ * {@link Exception} getMessage() before {@link Exception}'s message.
+ * it can be used for java logical statement 
+ * 
+ * @author Michael xixuan.lx
+ *
+ */
 public class ConfigLoadException extends Exception {
 
 	private static final long serialVersionUID = -7800681594596184363L;
 
+	/**
+	 * Error Code
+	 * 
+	 * @author Michael
+	 *
+	 */
 	public static enum ExceptionCode {
-		CONFIG_ARGUMENT_INVALID, CONFIG_KEY_ACCESS_INVALID, CONFIG_KEY_NOT_FOUND, CONFIG_KEY_PARSE_FAILED
+		ARGUMENT_INVALID, KEY_ACCESS_INVALID, KEY_NOT_FOUND, VALUE_PARSE_FAILED
 	}
 	
 	private final ExceptionCode error;
