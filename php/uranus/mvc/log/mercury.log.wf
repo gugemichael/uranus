@@ -1,0 +1,2 @@
+[WARNING][inputfilter.php:83][2015-12-22][14:11:23] request is without auth token
+[WARNING][mercury_mvc.php:139][2015-12-22][14:11:23] Caught Exception, errcode:mercury.auth

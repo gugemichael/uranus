@@ -10,6 +10,7 @@ import com.uranus.lang.configuration.ConfigureKey;
 import com.uranus.lang.configuration.loader.HumanReadableConfigureLoader;
 import com.uranus.lang.configuration.loader.KVConfigureLoader;
 import com.uranus.lang.configuration.loader.UserDefinedConfigureLoader;
+import com.uranus.lang.configuration.parser.KeyValueVariableParser;
 
 public class ConfigLoaderTest {
 
@@ -57,6 +58,9 @@ public class ConfigLoaderTest {
 
 		@ConfigureKey(key = "not_exist_key", required = false)
 		public static String not_exist_key = "set_default_value_here_if_not_exist";
+		
+		@ConfigureKey(key = "var")
+		public static String var = "variable_s";
 	}
 
 	public static void main(String[] args) {
@@ -66,21 +70,21 @@ public class ConfigLoaderTest {
 			/**
 			 * KVConfigureLoader
 			 */
-			String config = "f=1.13\nd=123.123123123\nlist = 10.15.0.12,23.22.1.1\ns=abcsdef\na=1\nb=2\nc=12\nintList=1,2,3\nstrList=aaaa,cccc,vvvv\nenum=BB\nlongList=1,2,3,4,5\nlongSet=1,1,1,2,2,2\nbool=true";
-			new KVConfigureLoader().parse(Conf.class, config);
+			String config = "var=${s}\nf=1.13\nd=123.123123123\nlist = 10.15.0.12,23.22.1.1\ns=abcsdef\na=1\nb=2\nc=12\nintList=1,2,3\nstrList=aaaa,cccc,vvvv\nenum=BB\nlongList=1,2,3,4,5\nlongSet=1,1,1,2,2,2\nbool=true";
+			new KVConfigureLoader().setConfigureParser(new KeyValueVariableParser()).parse(Conf.class, config);
 			System.out.println(new ClassMemberReflector().toString(Conf.class));
 
 			/**
 			 * HumanReadableConfigureLoader
 			 */
-			config = "f=1.13\nd=123.123123123\nlist = 10.15.0.12,23.22.1.1\ns=abcsdef\na=1\nb=2M\nc=12\nintList=1,2,3\nstrList=aaaa,cccc,vvvv\nenum=BB\nlongList=1,2,3,4,5\nlongSet=1,1,1,2,2,2\nbool=on";
+			config = "var=${s}\nf=1.13\nd=123.123123123\nlist = 10.15.0.12,23.22.1.1\ns=abcsdef\na=1\nb=2M\nc=12\nintList=1,2,3\nstrList=aaaa,cccc,vvvv\nenum=BB\nlongList=1,2,3,4,5\nlongSet=1,1,1,2,2,2\nbool=on";
 			new HumanReadableConfigureLoader().parse(Conf.class, config);
 			System.out.println(new ClassMemberReflector().toString(Conf.class));
 
 			/**
 			 * UserDefinedConfigureLoader
 			 */
-			config = "f=1.13\nd=123.123123123\nlist = 10.15.0.12,23.22.1.1\ns=abcsdef\na=1\nb=2\nc=12\nintList=1,2,3\nstrList=aaaa,cccc,vvvv\nenum=BB\nlongList=1,2,3,4,5\nlongSet=1,1,1,2,2,2\nbool=on";
+			config = "var=${s}\nf=1.13\nd=123.123123123\nlist = 10.15.0.12,23.22.1.1\ns=abcsdef\na=1\nb=2\nc=12\nintList=1,2,3\nstrList=aaaa,cccc,vvvv\nenum=BB\nlongList=1,2,3,4,5\nlongSet=1,1,1,2,2,2\nbool=on";
 			new UserDefinedConfigureLoader() {
 
 				@Override

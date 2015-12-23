@@ -9,7 +9,7 @@ define('LOGGER_TRACE',2);
 define('LOGGER_WARNNING',4);
 define('LOGGER_FATAL',8);
 	
-class MercuryLogger
+class UranusLog
 {
 	/* normal & wf log file */
 	public static $log_file = array();
@@ -18,7 +18,7 @@ class MercuryLogger
 
 	protected static function __log_write($file,$basic_line,$str)
 	{
-		$date = date("[Y-m-d][H:i:s] ");
+		$date = date("[Y-m-d][H:i:s] - ");
 		fwrite($file,$basic_line.$date.$str."\n");
 	}
 

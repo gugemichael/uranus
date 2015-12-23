@@ -17,10 +17,11 @@ import java.util.UnknownFormatConversionException;
 import com.uranus.lang.configuration.ConfigLoadException;
 import com.uranus.lang.configuration.ConfigureKey;
 import com.uranus.lang.configuration.ConfigureOption;
-import com.uranus.lang.configuration.ConfigureParser;
 import com.uranus.lang.configuration.GenericStruct;
 import com.uranus.lang.configuration.ConfigLoadException.ExceptionCode;
 import com.uranus.lang.configuration.ConfigureOption.ConfigureParsePolicy;
+import com.uranus.lang.configuration.parser.ConfigureParser;
+import com.uranus.lang.configuration.parser.KeyValueParser;
 
 /**
  * 
@@ -47,7 +48,7 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
 	 * analytic key with parser's parse() 
 	 * 
 	 */
-	private ConfigureParser PARSER = ConfigureParser.STANDARD_PARSER;
+	private ConfigureParser PARSER = new KeyValueParser();
 
 	public AbstractConfigureLoader() {
 		

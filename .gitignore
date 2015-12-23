@@ -14,3 +14,5 @@ target
 .AppleDouble
 .DS_Store
 /target/
+.log
+.log/
