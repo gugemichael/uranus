@@ -1,4 +1,4 @@
-package com.uranus.lang.configuration;
+package com.uranus.configuration;
 
 import java.lang.reflect.Type;
 import java.util.LinkedList;

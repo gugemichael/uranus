@@ -1,4 +1,4 @@
-package com.uranus.lang.configuration.parser;
+package com.uranus.configuration.parser;
 
 import java.io.IOException;
 import java.io.StringReader;

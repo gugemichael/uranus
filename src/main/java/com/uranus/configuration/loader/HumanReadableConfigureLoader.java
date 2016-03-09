@@ -1,10 +1,10 @@
-package com.uranus.lang.configuration.loader;
+package com.uranus.configuration.loader;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UnknownFormatConversionException;
 
-import com.uranus.lang.configuration.ConfigureOption;
+import com.uranus.configuration.ConfigureOption;
 
 /**
  * Config expressed in human reading format loader 
