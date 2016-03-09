@@ -7,13 +7,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public interface FlowController {
 
-	public enum FlowControllerType {
-		QPS, FLOW_FUNNEL;
-	}
+	enum FlowControllerType {
+		QPS, FLOW_FUNNEL
+    }
 
-	public interface FlowControllerPolicy {
+	interface FlowControllerPolicy {
 		
-		public FlowControllerPolicy BLOCK = new FlowControllerPolicy() {
+		FlowControllerPolicy BLOCK = new FlowControllerPolicy() {
 			@Override
 			public void action(long spend, long left) {
 				try {
@@ -24,14 +24,14 @@ public interface FlowController {
 			}
 		}; 
 		
-		public FlowControllerPolicy EXCEPTION = new FlowControllerPolicy() {
+		FlowControllerPolicy EXCEPTION = new FlowControllerPolicy() {
 			@Override
 			public void action(long spend, long left) {
 				throw new AccessControlException("qps flow control max");
 			}
 		}; 
 		
-		public void action(long spend, long left);
+		void action(long spend, long left);
 	}
 
 	/**
@@ -39,24 +39,24 @@ public interface FlowController {
 	 * 
 	 * @return
 	 */
-	public boolean control(int number);
+    boolean control(int number);
 	
 	/**
 	 * entry this flow check point many request
 	 * 
 	 * @return
 	 */
-	public boolean control();
+    boolean control();
 
 	/**
 	 * 
 	 */
-	public FlowController setCheckPoint(Object control) throws IllegalArgumentException;
+    FlowController setCheckPoint(Object control) throws IllegalArgumentException;
 
 	/**
 	 * 
 	 */
-	public FlowController setControlPolicy(FlowControllerPolicy policy) throws IllegalArgumentException;
+    FlowController setControlPolicy(FlowControllerPolicy policy) throws IllegalArgumentException;
 }
 
 class QPSFlowController implements FlowController {

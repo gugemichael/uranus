@@ -22,6 +22,6 @@ public interface ConfigureParser {
 	 * @return key value pair
 	 * 
 	 */
-	public Map<String, String> parse(String content);
+    Map<String, String> parse(String content);
 
 }

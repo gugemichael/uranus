@@ -13,7 +13,7 @@ public interface NetReportorProcessor {
 	 * 
 	 * @param client
 	 */
-	public void acceptNewClient(NetReportorConn client);
+    void acceptNewClient(NetReportorConn client);
 
 	/**
 	 * Call on incoming packet, write data in ConnClient
@@ -21,19 +21,19 @@ public interface NetReportorProcessor {
 	 * @param c , current connection context
 	 * @param buffer , read buffer
 	 */
-	public void process(NetReportorConn client);
+    void process(NetReportorConn client);
 
 	/**
 	 * Call on close client socket
 	 * 
 	 */
-	public void destoryClient(NetReportorConn client);
+    void destoryClient(NetReportorConn client);
 
 	
 	/**
 	 * Process without any operation
 	 */
-	public static NetReportorProcessor NO_OP = new NetReportorProcessor() {
+    NetReportorProcessor NO_OP = new NetReportorProcessor() {
 		
 		@Override
 		public void acceptNewClient(NetReportorConn c) {

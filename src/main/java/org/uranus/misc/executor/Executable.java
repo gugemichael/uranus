@@ -13,6 +13,6 @@ public interface Executable {
 	 * 
 	 * @return false on retry required or true no more retry
 	 */
-	public abstract boolean run();
+    boolean run();
 	
 }

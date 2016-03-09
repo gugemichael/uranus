@@ -12,7 +12,7 @@ import java.util.UnknownFormatConversionException;
 
 public class ConfigLoaderTest {
 
-	public static enum SomeEnum {
+	public enum SomeEnum {
 		AA, BB
 	}
 

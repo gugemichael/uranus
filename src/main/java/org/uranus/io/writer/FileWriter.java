@@ -13,26 +13,26 @@ public interface FileWriter {
 	 * 
 	 * @param content
 	 */
-	public void write(byte content[], int offset, int count);
+    void write(byte content[], int offset, int count);
 
 	/**
 	 * write with content string type
 	 * 
 	 * @param content
 	 */
-	public void writeLine(String content);
+    void writeLine(String content);
 
 	/**
 	 * write something to underlay resource
 	 * 
 	 * @param content
 	 */
-	public void flush();
+    void flush();
 
 	/**
 	 * close the writer
 	 */
-	public void close();
+    void close();
 
 	/**
 	 * open file with full path name and mode
@@ -44,6 +44,6 @@ public interface FileWriter {
 	 * 
 	 * @return true if open success
 	 */
-	public boolean open(String fileName, WriteMode mode) throws IOException;
+    boolean open(String fileName, WriteMode mode) throws IOException;
 
 }

@@ -25,7 +25,7 @@ public interface ConfigureLoader
 	 * @throws IOException
 	 * @throws ConfigLoadException
 	 */
-	public void parse(Class<?> c, Map<String, String> kv) throws ConfigLoadException;
+    void parse(Class<?> c, Map<String, String> kv) throws ConfigLoadException;
 
 	/**
 	 * Parse properties style (key=value liked) conf from String
@@ -33,13 +33,13 @@ public interface ConfigureLoader
 	 * @throws IOException 
 	 * @throws ConfigLoadException 
 	 */
-	public void parse(Class<?> c, String conf) throws ConfigLoadException;
+    void parse(Class<?> c, String conf) throws ConfigLoadException;
 	
 	/**
 	 * Parse properties style (key=value liked) conf from File class
 	 * 
 	 */
-	public void parse(Class<?> c, File conf) throws ConfigLoadException, IOException;
+    void parse(Class<?> c, File conf) throws ConfigLoadException, IOException;
 
 }
 

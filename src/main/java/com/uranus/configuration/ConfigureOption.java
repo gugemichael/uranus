@@ -14,7 +14,7 @@ public class ConfigureOption {
 	 * @author Michael xixuan.lx
 	 *
 	 */
-	public static enum ConfigureParsePolicy {
+	public enum ConfigureParsePolicy {
 		/* DISCARD, ABORT, */ EXCEPTION
 	}
 	

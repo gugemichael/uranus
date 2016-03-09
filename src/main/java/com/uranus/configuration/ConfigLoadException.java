@@ -20,7 +20,7 @@ public class ConfigLoadException extends Exception {
 	 * @author Michael
 	 *
 	 */
-	public static enum ExceptionCode {
+	public enum ExceptionCode {
 		ARGUMENT_INVALID, KEY_ACCESS_INVALID, KEY_NOT_FOUND, VALUE_PARSE_FAILED
 	}
 	

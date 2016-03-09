@@ -21,12 +21,12 @@ public @interface ConfigureKey {
 	/**
 	 * config key name
 	 */
-	public String key() default "";
+    String key();
 	
 	/**
 	 * is required config key (optional)
 	 * 
 	 * we will skip the not found key if annotation with required=false
 	 */
-	public boolean required() default true;
+    boolean required() default true;
 }

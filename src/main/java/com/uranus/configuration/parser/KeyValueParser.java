@@ -39,4 +39,4 @@ public class KeyValueParser implements ConfigureParser {
 		}
 	}
 
-};
+}
