@@ -1,11 +1,11 @@
-package com.uranus.configuration.loader;
+package org.uranus.configuration.loader;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import com.uranus.configuration.ConfigureKey;
-import com.uranus.configuration.ConfigLoadException;
+import org.uranus.configuration.ConfigureKey;
+import org.uranus.configuration.ConfigLoadException;
 
 /**
  * 

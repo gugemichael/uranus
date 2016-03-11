@@ -1,4 +1,4 @@
-package com.uranus.configuration;
+package org.uranus.configuration;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

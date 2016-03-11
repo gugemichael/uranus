@@ -1,10 +1,10 @@
 package org.uranus.test;
 
-import com.uranus.configuration.ConfigureKey;
-import com.uranus.configuration.loader.HumanReadableConfigureLoader;
-import com.uranus.configuration.loader.KVConfigureLoader;
-import com.uranus.configuration.loader.UserDefinedConfigureLoader;
-import com.uranus.configuration.parser.KeyValueVariableParser;
+import org.uranus.configuration.ConfigureKey;
+import org.uranus.configuration.loader.HumanReadableConfigureLoader;
+import org.uranus.configuration.loader.KVConfigureLoader;
+import org.uranus.configuration.loader.UserDefinedConfigureLoader;
+import org.uranus.configuration.parser.KeyValueVariableParser;
 
 import java.util.List;
 import java.util.Set;

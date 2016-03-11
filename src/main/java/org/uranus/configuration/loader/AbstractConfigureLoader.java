@@ -1,11 +1,11 @@
-package com.uranus.configuration.loader;
+package org.uranus.configuration.loader;
 
-import com.uranus.configuration.ConfigLoadException;
-import com.uranus.configuration.ConfigureKey;
-import com.uranus.configuration.ConfigureOption;
-import com.uranus.configuration.GenericStruct;
-import com.uranus.configuration.parser.ConfigureParser;
-import com.uranus.configuration.parser.KeyValueParser;
+import org.uranus.configuration.ConfigLoadException;
+import org.uranus.configuration.ConfigureKey;
+import org.uranus.configuration.ConfigureOption;
+import org.uranus.configuration.GenericStruct;
+import org.uranus.configuration.parser.ConfigureParser;
+import org.uranus.configuration.parser.KeyValueParser;
 
 import java.io.BufferedReader;
 import java.io.File;

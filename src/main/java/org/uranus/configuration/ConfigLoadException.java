@@ -1,4 +1,4 @@
-package com.uranus.configuration;
+package org.uranus.configuration;
 
 /**
  * Exception of configure loader

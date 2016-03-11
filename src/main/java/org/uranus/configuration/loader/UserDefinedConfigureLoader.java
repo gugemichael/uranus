@@ -1,8 +1,8 @@
-package com.uranus.configuration.loader;
+package org.uranus.configuration.loader;
 
 import java.util.UnknownFormatConversionException;
 
-import com.uranus.configuration.ConfigureOption;
+import org.uranus.configuration.ConfigureOption;
 
 /**
  * Only a HINT custom loader
