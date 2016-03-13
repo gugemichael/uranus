@@ -3,7 +3,7 @@ package org.uranus.test;
 import org.uranus.configuration.ConfigureKey;
 import org.uranus.configuration.loader.HumanReadableConfigureLoader;
 import org.uranus.configuration.loader.KVConfigureLoader;
-import org.uranus.configuration.loader.UserDefinedConfigureLoader;
+import org.uranus.configuration.loader.CustomizeConfigureLoader;
 import org.uranus.configuration.parser.KeyValueVariableParser;
 
 import java.util.List;
@@ -85,10 +85,10 @@ public class ConfigLoaderTest {
             dumpConf();
 
 			/**
-			 * UserDefinedConfigureLoader
+			 * CustomizeConfigureLoader
 			 */
 			config = "var=${s}\nf=1.13\nd=123.123123123\nlist = 10.15.0.12,23.22.1.1\ns=abcsdef\na=1\nb=2\nc=12\nintList=1,2,3\nstrList=aaaa,cccc,vvvv\nenum=BB\nlongList=1,2,3,4,5\nlongSet=1,1,1,2,2,2\nbool=on";
-			new UserDefinedConfigureLoader() {
+			new CustomizeConfigureLoader() {
 
 				@Override
 				protected String readString(String key, String value) throws NumberFormatException {

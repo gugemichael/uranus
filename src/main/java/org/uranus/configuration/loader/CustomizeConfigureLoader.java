@@ -1,8 +1,8 @@
 package org.uranus.configuration.loader;
 
-import java.util.UnknownFormatConversionException;
-
 import org.uranus.configuration.ConfigureOption;
+
+import java.util.UnknownFormatConversionException;
 
 /**
  * Only a HINT custom loader
@@ -10,33 +10,33 @@ import org.uranus.configuration.ConfigureOption;
  * @author Michael xixuan.lx
  *
  */
-public class UserDefinedConfigureLoader extends AbstractConfigureLoader
+public class CustomizeConfigureLoader extends AbstractConfigureLoader
 {
-	public UserDefinedConfigureLoader() {
+	public CustomizeConfigureLoader() {
 		super();
 	}
 
-	public UserDefinedConfigureLoader(ConfigureOption option) {
+	public CustomizeConfigureLoader(ConfigureOption option) {
 		super(option);
 	}
 
 	@Override
 	protected Boolean readBoolean(String key, String value) throws UnknownFormatConversionException {
-		throw new NumberFormatException("this method should be implement");
+		throw new NumberFormatException("readBoolean method should be implement");
 	}
 	
 	@Override
 	protected Double readNumber(String key, String value) throws UnknownFormatConversionException {
-		throw new NumberFormatException("this method should be implement");
+		throw new NumberFormatException("readNumber method should be implement");
 	}
 
 	@Override
 	protected String readString(String key, String value) throws NumberFormatException {
-		throw new NumberFormatException("this method should be implement");
+		throw new NumberFormatException("readString method should be implement");
 	}
 
 	@Override
 	protected Object readObject(String key, String value) throws NumberFormatException {
-		throw new NumberFormatException("this method should be implement");
+		throw new NumberFormatException("readObject method should be implement");
 	}
 }

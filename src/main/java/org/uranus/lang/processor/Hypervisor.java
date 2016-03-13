@@ -2,113 +2,93 @@ package org.uranus.lang.processor;
 
 
 public abstract class Hypervisor {
-	
-	private static final int DEFAULT_IDLE_TIME = 3000;
 
-	/**
-	 * daemon thread , block or not
-	 */
-	private boolean background = false;
+    private static final int DEFAULT_IDLE_TIME = 3000;
 
-	/**
-	 * Time slice waiting on sub-running crash or stop
-	 */
-	private int suspend = DEFAULT_IDLE_TIME;
+    // daemon thread , block or not
+    private boolean background = false;
+    // Time slice waiting on sub-running crash or stop
+    private int suspend = DEFAULT_IDLE_TIME;
+    // represent current thread, if background is true
+    private Thread current;
 
-	/**
-	 * represent current thread, if background is true
-	 */
-	private Thread current;
+    public Hypervisor backgroud() {
+        this.background = true;
+        return this;
+    }
 
-	public Hypervisor() {
-	}
+    public Hypervisor suspendTime(int suspend) {
+        this.suspend = suspend;
+        return this;
+    }
 
-	public Hypervisor backgroud() {
-		this.background = true;
-		return this;
-	}
+    public boolean isBackground() {
+        return background;
+    }
 
-	public Hypervisor suspendTime(int suspend) {
-		this.suspend = suspend;
-		return this;
-	}
+    public int getSuspendTime() {
+        return suspend;
+    }
 
-	public boolean isBackground() {
-		return background;
-	}
+    /**
+     * start running
+     */
+    public void startup() {
+        if (!background)
+            loop();
+        else {
+            current = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    loop();
+                }
+            }, Hypervisor.class.getSimpleName());
+            current.setDaemon(!background);
+            current.start();
+        }
+    }
 
-	public int getSuspendTime() {
-		return suspend;
-	}
+    /**
+     * wait until thread has exited
+     *
+     * @throws InterruptedException
+     */
+    public void join() throws InterruptedException {
+        if (background && current != null)
+            current.join();
+    }
 
-	/**
-	 * start running
-	 */
-	public void startup() {
-		if (!background)
-			loop();
-		else {
-			current = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					loop();
-				}
-			}, Hypervisor.class.getSimpleName());
-			current.setDaemon(background ? false : true);
-			current.start();
-		}
-	}
+    private void loop() {
 
-	/**
-	 * wait until thread has exited
-	 * 
-	 * @throws InterruptedException
-	 */
-	public void join() throws InterruptedException {
-		if (background && current != null)
-			current.join();
-	}
+        prepare();
 
-	private void loop() {
+        // keep running
+        while (true) {
+            try {
+                while (true) {
+                    runningGuard();
+                    Thread.sleep(suspend);
+                }
+            } catch (Throwable ex) {
+                onException(ex);
+            } finally {
+                try {
+                    Thread.sleep(suspend);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
-		prepare();
+    // Do initial job before running
+    protected void prepare() {
+    }
 
-		// keep running
-		while (true) {
-			try {
-				while (true) {
-					runningGuard();
-					Thread.sleep(suspend);
-				}
-			} catch (Throwable ex) {
-				onException(ex);
-			} finally {
-				try {
-					Thread.sleep(suspend);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
+    // Pass exception
+    protected void onException(Throwable ex) {
+    }
 
-	/**
-	 * Do initial job before running
-	 */
-	protected void prepare() {
-		
-	}
-
-	/**
-	 * Pass exception
-	 */
-	protected void onException(Throwable ex) {
-		
-	}
-
-	/**
-	 * Actual working here !
-	 */
-	protected abstract void runningGuard() throws Exception;
-
+    // Actual working here !
+    protected abstract void runningGuard() throws Exception;
 }

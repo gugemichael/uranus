@@ -41,14 +41,13 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
     private ConfigureParser PARSER = new KeyValueParser();
 
     public AbstractConfigureLoader() {
-
-        this(
-                new ConfigureOption().setParsePolicy(ConfigureOption.ConfigureParsePolicy.EXCEPTION)
-        );
-
+        this(new ConfigureOption().setParsePolicy(ConfigureOption.ConfigureParsePolicy.EXCEPTION));
     }
 
     public AbstractConfigureLoader(ConfigureOption policy) {
+        if (policy == null)
+            throw new NullPointerException("");
+
         this.option = policy;
     }
 
@@ -188,7 +187,6 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
             if ((field.getModifiers() & Modifier.STATIC) == 0 || (field.getModifiers() & Modifier.PUBLIC) == 0)
                 continue;
 
-
             // only annotated with ConfigureKey
             ConfigureKey annotation = field.getAnnotation(ConfigureKey.class);
             if (annotation == null)
@@ -212,6 +210,8 @@ public abstract class AbstractConfigureLoader implements ConfigureLoader {
                 switch (option.getParsePolicy()) {
                 case EXCEPTION:
                     throw new ConfigLoadException(ConfigLoadException.ExceptionCode.KEY_NOT_FOUND, String.format("config key not found %s, %s", annotationKey, field.getName()));
+                case DISCARD:
+                    continue;
                 default:
                     break;
                 }

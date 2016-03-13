@@ -4,46 +4,41 @@ import java.io.IOException;
 
 public interface FileWriter {
 
-	enum WriteMode {
-		APPEND, TRUNCATE
-	}
+    enum WriteMode {
+        APPEND, TRUNCATE
+    }
 
-	/**
-	 * write content
-	 * 
-	 * @param content
-	 */
+    /**
+     * write content
+     *
+     * @param content
+     */
     void write(byte content[], int offset, int count);
 
-	/**
-	 * write with content string type
-	 * 
-	 * @param content
-	 */
+    /**
+     * write with content string type
+     *
+     * @param content
+     */
     void writeLine(String content);
 
-	/**
-	 * write something to underlay resource
-	 * 
-	 * @param content
-	 */
+    /**
+     * write something to underlay resource
+     */
     void flush();
 
-	/**
-	 * close the writer
-	 */
+    /**
+     * close the writer
+     */
     void close();
 
-	/**
-	 * open file with full path name and mode
-	 * 
-	 * @param fileName,
-	 *            full path name
-	 * @param mode,
-	 *            {@link WriteMode}
-	 * 
-	 * @return true if open success
-	 */
+    /**
+     * open file with full path name and mode
+     *
+     * @param fileName, full path name
+     * @param mode,     {@link WriteMode}
+     * @return true if open success
+     */
     boolean open(String fileName, WriteMode mode) throws IOException;
 
 }
