@@ -1,4 +1,4 @@
-# Java fundamental utility framework
+# Java Fundamental Utility Framework
 
 `org.uranus.lang`
 
