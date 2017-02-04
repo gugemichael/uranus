@@ -95,7 +95,7 @@ public class Time {
         return String.format("%d-%d-%d %d:%d:%d.%d", year, month, day, hour, minute, second, microSecond);
     }
 
-    public static Time fetch() {
+    public static Time now() {
         Calendar calender = Calendar.getInstance();
         return new Time().setYear(calender.get(Calendar.YEAR)).setMonth(calender.get(Calendar.MONTH) + 1)
                 .setDay(calender.get(Calendar.DAY_OF_MONTH)).setHour(calender.get(Calendar.HOUR_OF_DAY))

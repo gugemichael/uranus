@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class DailyRollFileWriter extends GenericFileWriter {
-
     // rotate file name carry with daytime
     private static final String ROTATE_FILE_PATTERN = "%s.%d-%02d-%02d";
     // rotate file name if conflict with default daytime rotate file, carry with autonumber
@@ -26,7 +25,7 @@ public class DailyRollFileWriter extends GenericFileWriter {
     @Override
     public void write(byte[] content, int offset, int count) {
 
-        Time current = Time.fetch();
+        Time current = Time.now();
 
         super.write(content, offset, count);
 

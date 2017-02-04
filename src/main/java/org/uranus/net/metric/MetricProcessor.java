@@ -1,4 +1,4 @@
-package org.uranus.net.reportor;
+package org.uranus.net.metric;
 
 /**
  * Net reportor Connection Handler
@@ -6,14 +6,14 @@ package org.uranus.net.reportor;
  * @author Michael xixuan.lx
  *
  */
-public interface NetReportorProcessor {
+public interface MetricProcessor {
 
 	/**
 	 * Call on accept incoming new client socket
 	 * 
 	 * @param client
 	 */
-    void acceptNewClient(NetReportorConn client);
+    void acceptNewClient(MetricClientConnection client);
 
 	/**
 	 * Call on incoming packet, write data in ConnClient
@@ -21,31 +21,31 @@ public interface NetReportorProcessor {
 	 * @param c , current connection context
 	 * @param buffer , read buffer
 	 */
-    void process(NetReportorConn client);
+    void process(MetricClientConnection client);
 
 	/**
 	 * Call on close client socket
 	 * 
 	 */
-    void destoryClient(NetReportorConn client);
+    void destoryClient(MetricClientConnection client);
 
 	
 	/**
 	 * Process without any operation
 	 */
-    NetReportorProcessor NO_OP = new NetReportorProcessor() {
+    MetricProcessor NO_OP = new MetricProcessor() {
 		
 		@Override
-		public void acceptNewClient(NetReportorConn c) {
+		public void acceptNewClient(MetricClientConnection c) {
 			c.close();
 		}
 
 		@Override
-		public void process(NetReportorConn c) {
+		public void process(MetricClientConnection c) {
 		}
 
 		@Override
-		public void destoryClient(NetReportorConn c) {
+		public void destoryClient(MetricClientConnection c) {
 		}
 	};
 }

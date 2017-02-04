@@ -1,7 +1,6 @@
 package org.uranus.util.buffer;
 
 public class ByteArrayBuffer {
-
 	/**
 	 * buffer capacity max size
 	 */

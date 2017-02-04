@@ -1,7 +1,5 @@
-package org.uranus.lang.constans;
+package org.uranus.lang;
 
-public class Constants {
-
+public class Uranus {
     public static final String DELIMITER = String.format("%n");
-
 }

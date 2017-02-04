@@ -5,19 +5,18 @@ import org.uranus.util.buffer.ByteArrayBuffer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+
 
 public class GenericFileWriter implements FileWriter {
 
     /**
      * thread cached calender instances
      */
-    private ThreadLocal<ByteArrayBuffer> arena = new ThreadLocal<ByteArrayBuffer>() {
-        @Override
-        protected ByteArrayBuffer initialValue() {
-            // Java fill the array buffer with zero
-            return new ByteArrayBuffer();
-        }
-    };
+    private ConcurrentMap<Long, ByteArrayBuffer> arena = new ConcurrentHashMap<Long, ByteArrayBuffer>(64);
 
     private static final String seperator = String.format("%n");
 
@@ -31,9 +30,12 @@ public class GenericFileWriter implements FileWriter {
      * file write handler , dont's use ${FileWriter} bufferd , we flush() right
      * now after write()
      */
-    protected volatile FileOutputStream out;
+    volatile FileOutputStream out;
 
     private final boolean buffered;
+
+    private final AtomicLong refcount = new AtomicLong(1);
+    private final AtomicBoolean isOpen = new AtomicBoolean(true);
 
     public GenericFileWriter(boolean buffered) {
         this.buffered = buffered;
@@ -49,7 +51,6 @@ public class GenericFileWriter implements FileWriter {
      * @param fileName, name of the file full path
      * @param mode,     {@link WriteMode} APPEND or TRUNCATE
      * @return true if open success
-     *
      * @throws IOException new {@link FileOutputStream} failed
      */
     @Override
@@ -80,34 +81,61 @@ public class GenericFileWriter implements FileWriter {
         write(line.getBytes(), 0, line.length());
     }
 
+    private void ensureArena() {
+        if (!arena.containsKey(Thread.currentThread().getId()))
+            arena.put(Thread.currentThread().getId(), new ByteArrayBuffer());
+    }
+
     /**
      * write byte[] conent
      */
     @Override
     public void write(byte[] content, int offset, int count) {
         if (buffered) {
-            ByteArrayBuffer buffer = arena.get();
+            ensureArena();
+            ByteArrayBuffer buffer = arena.get(Thread.currentThread().getId());
             // flush directly if we have no space to reserve
-            if (!buffer.ensureCapacity(count)) {
-                doWrite(buffer.getBuffer(), 0, buffer.getOffset());
+            if (!buffer.ensureCapacity(count) || !isOpen.get()) {
+                doWrite(buffer.getBuffer(), 0, buffer.getOffset(), false);
                 buffer.clear();
             }
             buffer.append(content, offset, count);
         } else {
-            doWrite(content, offset, count);
+            doWrite(content, offset, count, false);
         }
     }
 
-    private void doWrite(byte[] content, int offset, int count) {
+    private void doWrite(byte[] content, int offset, int count, boolean force) {
         if (content != null && count > 0 && offset >= 0) {
             try {
-                out.write(content, offset, count);
+                if (out != null && acquireWriteStamp()) {
+                    if (isOpen.get())
+                        out.write(content, offset, count);
+                    releaseStamp();
+                } else if (force) {
+                    out.write(content, offset, count);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    private boolean acquireWriteStamp() {
+        return isOpen.get() && refcount.get() != 0 && refcount.incrementAndGet() > 1;
+    }
+
+    private void releaseStamp() {
+        if (refcount.decrementAndGet() == 0) {
+            try {
+                out.flush();
+                out.close();
+                out = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     /**
      * flush the buffered content if this writer buffered enable
@@ -116,10 +144,15 @@ public class GenericFileWriter implements FileWriter {
     public void flush() {
         try {
             if (buffered) {
-                //flush buffered content first of all
-                ByteArrayBuffer buffer = arena.get();
-                if (buffer.getOffset() != 0)
-                    doWrite(buffer.getBuffer(), 0, buffer.getOffset());
+                synchronized (this) {
+                    //flush all threads buffered content
+                    for (ByteArrayBuffer buffer : arena.values()) {
+                        if (buffer.getOffset() != 0) {
+                            doWrite(buffer.getBuffer(), 0, buffer.getOffset(), true);
+                            buffer.clear();
+                        }
+                    }
+                }
             }
             out.flush();
         } catch (IOException e) {
@@ -129,19 +162,28 @@ public class GenericFileWriter implements FileWriter {
 
     @Override
     public void close() {
-        flush();
-        try {
-            out.close();
-            out = null;
-        } catch (IOException ignored) {
+        isOpen.set(false);
+        // flush own thread buffer
+        ByteArrayBuffer buffer = arena.get(Thread.currentThread().getId());
+        if (buffer != null && buffer.getOffset() != 0) {
+            doWrite(buffer.getBuffer(), 0, buffer.getOffset(), true);
+            buffer.clear();
         }
+
+        // take a look at others buffer. we flush them if only if
+        // there has no writer
+        if (refcount.get() == 1) {
+            flush();
+        }
+        releaseStamp();
     }
 
-    protected String getFileName() {
+    String getFileName() {
         return fileName;
     }
 
-    protected WriteMode getFileWriteMode() {
+    WriteMode getFileWriteMode() {
         return mode;
     }
 }
+

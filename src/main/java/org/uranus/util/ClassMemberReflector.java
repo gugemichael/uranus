@@ -1,6 +1,6 @@
 package org.uranus.util;
 
-import org.uranus.lang.constans.Constants;
+import org.uranus.lang.Uranus;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -119,7 +119,7 @@ public class ClassMemberReflector {
 				} else {
 					classString.append(member.get(instance).toString());
 				}
-				classString.append(Constants.DELIMITER);
+				classString.append(Uranus.DELIMITER);
 			} catch (Exception e) {
 				return e.getMessage();
 			}

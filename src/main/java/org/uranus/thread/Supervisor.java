@@ -1,7 +1,7 @@
-package org.uranus.lang.processor;
+package org.uranus.thread;
 
 
-public abstract class Hypervisor {
+public abstract class Supervisor {
 
     private static final int DEFAULT_IDLE_TIME = 3000;
 
@@ -12,12 +12,12 @@ public abstract class Hypervisor {
     // represent current thread, if background is true
     private Thread current;
 
-    public Hypervisor backgroud() {
+    public Supervisor backgroud() {
         this.background = true;
         return this;
     }
 
-    public Hypervisor suspendTime(int suspend) {
+    public Supervisor suspendTime(int suspend) {
         this.suspend = suspend;
         return this;
     }
@@ -42,7 +42,7 @@ public abstract class Hypervisor {
                 public void run() {
                     loop();
                 }
-            }, Hypervisor.class.getSimpleName());
+            }, Supervisor.class.getSimpleName());
             current.setDaemon(!background);
             current.start();
         }

@@ -12,7 +12,6 @@ public interface FlowController {
     }
 
 	interface FlowControllerPolicy {
-		
 		FlowControllerPolicy BLOCK = new FlowControllerPolicy() {
 			@Override
 			public void action(long spend, long left) {

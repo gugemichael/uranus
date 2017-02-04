@@ -2,7 +2,7 @@ package org.uranus.test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.uranus.lang.processor.ThreadsGroup;
+import org.uranus.thread.ThreadsGroup;
 import org.uranus.util.FlowController;
 import org.uranus.util.FlowController.FlowControllerPolicy;
 import org.uranus.util.FlowController.FlowControllerType;
